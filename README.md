@@ -6,6 +6,8 @@
 
 备用地址：https://nav.hiken.me
 
+GitHubPages：https://akenclub.github.io/KenNav/
+
 
 ## 介绍
 
