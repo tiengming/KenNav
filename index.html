@@ -855,6 +855,12 @@
       }
     }
 
+    @media (max-width: 360px) {
+      .action-button {
+        padding: 0;
+      }
+    }
+
     /* 图标输入组样式 */
     .icon-input-group {
       display: flex;
@@ -1744,6 +1750,190 @@
         padding: 0.6rem; /* 增大按钮点击区域 */
       }
     }
+
+    /* 搜索弹窗样式 */
+    .search-modal {
+      max-width: 600px;
+      overflow: hidden;
+      position: fixed;
+      top: 80px;  /* 距离顶部固定距离 */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-height: calc(100vh - 200px);  /* 限制最大高度 */
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .site-search-container {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+    }
+
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      padding-top: 0;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      gap: 0.8rem;
+      position: relative;
+      background: white;  /* 确保背景色 */
+      border-radius: 12px 12px 0 0;  /* 圆角只在顶部 */
+      height: 64px;  /* 固定高度 */
+      box-sizing: border-box;
+    }
+
+    .search-input-wrapper svg {
+      color: #6366f1;
+      flex-shrink: 0;
+    }
+
+    #siteSearchInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1.1rem;
+      background: none;
+      padding: 0.5rem;
+    }
+
+    .search-shortcut {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .search-shortcut kbd {
+      background: #f1f5f9;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      min-width: 1.2rem;
+      text-align: center;
+    }
+
+    .search-results {
+      overflow-y: auto;
+      max-height: calc(100vh - 400px);  /* 减去顶部间距、搜索框高度和底部间距 */
+      min-height: 0;  /* 允许内容少时自动收缩 */
+      padding: 0.5rem;
+      margin-top: 0;
+      background: white;
+      border-radius: 0 0 12px 12px;  /* 圆角只在底部 */
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.2rem;  /* 添加项目间距 */
+    }
+
+    .search-result-item:hover,
+    .search-result-item.selected {
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .search-result-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .search-result-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .search-result-name {
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+
+    .search-result-url {
+      font-size: 0.9rem;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-category {
+      font-size: 0.8rem;
+      color: #6366f1;
+      background: rgba(99, 102, 241, 0.1);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 480px) {
+      .search-modal {
+        top: 60px;  /* 移动端距顶部更近 */
+        width: 80%;
+      }
+      
+      .search-shortcut {
+        display: none;
+      }
+      
+      .search-input-wrapper {
+        height: 56px;  /* 移动端搜索框稍小 */
+        padding: 0.8rem;
+      }
+      
+      .search-results {
+        max-height: calc(100vh - 400px);
+      }
+      
+      .search-result-item {
+        padding: 0.6rem;
+      }
+    }
+
+    /* 添加动画效果 */
+    .modal#siteSearchModal {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .search-modal {
+      transform: translateX(-50%) translateY(-10px);
+      opacity: 0;
+      transition: all 0.2s ease-out;
+      background: #ffffff;  /* 确保搜索弹窗背景是纯白色 */
+    }
+    
+    .modal.show .search-modal {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* 添加样式 */
+    .shortcut-hint {
+      margin-left: 4px;
+    }
+    
+    @media (max-width: 480px) {
+      .shortcut-hint {
+        display: none;
+      }
+    }
   </style>
   <script type="module">
     import { 
@@ -1850,6 +2040,7 @@
     // 页面加载完成后初始化
     window.addEventListener('DOMContentLoaded', () => {
       initializeSearch();
+      initializeSiteSearch();
       initializeBookmarks();
       initializeEventListeners();
     });
@@ -3104,6 +3295,151 @@
     // 将函数设为全局可访问
     window.editCategory = editCategory;
     window.deleteCategory = deleteCategory;
+
+    // 初始化站内搜索
+    function initializeSiteSearch() {
+      const searchBtn = document.getElementById('siteSearchBtn');
+      const searchModal = document.getElementById('siteSearchModal');
+      const searchInput = document.getElementById('siteSearchInput');
+      const searchResults = document.getElementById('siteSearchResults');
+      let selectedIndex = -1;
+      let searchResultItems = [];
+
+      // 打开搜索弹窗
+      function openSearch() {
+        searchModal.classList.add('show');
+        searchInput.focus();
+      }
+
+      // 关闭搜索弹窗
+      function closeSearch() {
+        searchModal.classList.remove('show');
+        searchInput.value = '';
+        searchResults.innerHTML = '';
+        selectedIndex = -1;
+      }
+
+      // 执行搜索
+      function performSearch(query) {
+        const config = getBookmarkConfig();
+        const results = [];
+        
+        config.categories.forEach(category => {
+          category.links.forEach(link => {
+            if (link.name.toLowerCase().includes(query.toLowerCase()) ||
+                link.url.toLowerCase().includes(query.toLowerCase())) {
+              results.push({
+                ...link,
+                categoryName: category.name
+              });
+            }
+          });
+        });
+
+        return results;
+      }
+
+      // 渲染搜索结果
+      function renderSearchResults(results) {
+        if (results.length === 0) {
+          searchResults.innerHTML = '<div class="no-results">未找到相关链接</div>';
+          return;
+        }
+
+        searchResults.innerHTML = results.map((result, index) => `
+          <div class="search-result-item" data-url="${result.url}" data-index="${index}">
+            <div class="search-result-icon">${result.icon}</div>
+            <div class="search-result-info">
+              <div class="search-result-name">${result.name}</div>
+              <div class="search-result-url">${result.url}</div>
+            </div>
+            <div class="search-result-category">${result.categoryName}</div>
+          </div>
+        `).join('');
+
+        // 更新结果项引用
+        searchResultItems = searchResults.querySelectorAll('.search-result-item');
+      }
+
+      // 选择结果项
+      function selectResult(index) {
+        searchResultItems.forEach(item => item.classList.remove('selected'));
+        selectedIndex = index;
+        
+        if (selectedIndex >= 0 && selectedIndex < searchResultItems.length) {
+          const selectedItem = searchResultItems[selectedIndex];
+          selectedItem.classList.add('selected');
+          selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+
+      // 跳转到选中的链接
+      function navigateToSelected() {
+        if (selectedIndex >= 0 && selectedIndex < searchResultItems.length) {
+          const url = searchResultItems[selectedIndex].dataset.url;
+          window.location.href = url;
+        }
+      }
+
+      // 绑定事件
+      searchBtn.addEventListener('click', openSearch);
+
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        if (query) {
+          const results = performSearch(query);
+          renderSearchResults(results);
+          selectedIndex = -1;
+        } else {
+          searchResults.innerHTML = '';
+        }
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const direction = e.key === 'ArrowDown' ? 1 : -1;
+          let newIndex = selectedIndex + direction;
+          
+          if (newIndex < 0) {
+            newIndex = searchResultItems.length - 1;
+          } else if (newIndex >= searchResultItems.length) {
+            newIndex = 0;
+          }
+          
+          selectResult(newIndex);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+          e.preventDefault();
+          navigateToSelected();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          closeSearch();
+        }
+      });
+
+      // 点击结果项跳转
+      searchResults.addEventListener('click', (e) => {
+        const resultItem = e.target.closest('.search-result-item');
+        if (resultItem) {
+          window.location.href = resultItem.dataset.url;
+        }
+      });
+
+      // 点击空白处关闭
+      searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) {
+          closeSearch();
+        }
+      });
+
+      // 添加快捷键支持
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          openSearch();
+        }
+      });
+    }
   </script>
 </head>
 
@@ -3112,6 +3448,14 @@
     <header class="header">
       <div class="logo"></div>
       <div class="header-actions">
+        <button class="action-button" id="siteSearchBtn" title="站内搜索 (Ctrl+K)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>站内搜索</span>
+          <span class="shortcut-hint">(Ctrl+K)</span>
+        </button>
         <button class="action-button" id="addCategoryBtn" title="分组管理">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 6h18"></path>
@@ -3425,6 +3769,33 @@
       <div class="modal-footer">
         <button class="modal-button cancel-button" id="cancelCategoryButton">取消</button>
         <button class="modal-button save-button" id="saveCategoryButton">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加站内搜索弹窗 -->
+  <div class="modal" id="siteSearchModal">
+    <div class="modal-content search-modal">
+      <div class="site-search-container">
+        <div class="search-input-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="siteSearchInput" placeholder="站内搜索...">
+          <div class="search-shortcut">
+            <kbd>↑</kbd>
+            <kbd>↓</kbd>
+            <span>选择</span>
+            <kbd>Enter</kbd>
+            <span>跳转</span>
+            <kbd>Esc</kbd>
+            <span>关闭</span>
+          </div>
+        </div>
+        <div class="search-results" id="siteSearchResults">
+          <!-- 搜索结果将在这里动态显示 -->
+        </div>
       </div>
     </div>
   </div>
