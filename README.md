@@ -27,6 +27,7 @@ GitHubPages：https://akenclub.github.io/KenNav/
 
 - 🎨 简洁现代的界面设计
 
+- 🔍 支持站内搜索
 ## 浏览器兼容性
 
 为了获得最佳使用体验，推荐使用以下浏览器：
@@ -61,7 +62,7 @@ GitHubPages：https://akenclub.github.io/KenNav/
 <details>
 <summary>移动端</summary>
 
-![移动端主页截图](assets/img_index_mobile.png)
+![移动端主页截图](assets/img_mobile.png)
 
 </details>
 
@@ -71,7 +72,7 @@ GitHubPages：https://akenclub.github.io/KenNav/
 2. 修改代码后刷新页面即可看到效果
 3. 建议使用 Live Server 等工具提供实时预览
 
-## 技术栈与开发心得
+## 技术栈
 
 ### 技术选择
 - 原生 JavaScript（无框架）
@@ -81,7 +82,8 @@ GitHubPages：https://akenclub.github.io/KenNav/
 ### 开发工具
 本项目主要使用 [Cursor](https://www.cursor.com/) 进行开发。这是一个基于 AI 的编程工具，在开发过程中给了我很大帮助。
 
-### 开发体会
+<details>
+<summary>开发体会</summary>
 
 在开发这个导航页的过程中，我尝试了使用 AI 辅助编程的新方式。说实话，这种体验很有趣，就像有了一个会写代码的助手。
 
@@ -92,6 +94,8 @@ Cursor 确实帮我节省了不少时间，特别是在写 CSS 样式和一些�
 最有意思的是，使用 AI 工具改变了我写代码的方式。我发现自己花在思考产品设计和用户体验上的时间变多了，因为实现功能变得更快了。与其说是在编程，不如说更像是在和 AI 一起设计产品。
 
 虽然 AI 工具还不够完美，但确实让编程变得更轻松有趣了。关键是要学会如何更好地使用它，让它成为得力助手而不是完全依赖它。
+
+</details>
 
 ## 贡献
 
