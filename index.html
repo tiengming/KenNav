@@ -1,0 +1,3433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <title>首页</title>
+  <style>
+    /* 全局样式 */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f6f8fd, #f0f3fa);
+      color: #333;
+      -webkit-touch-callout: none;  /* 禁止长按菜单 */
+      -webkit-user-select: none;    /* Safari */
+      -khtml-user-select: none;     /* Konqueror HTML */
+      -moz-user-select: none;       /* Firefox */
+      -ms-user-select: none;        /* Internet Explorer/Edge */
+      user-select: none;            /* 非前缀版本 */
+    }
+
+    /* 容器样式 */
+    .container {
+      text-align: center;
+      backdrop-filter: blur(20px);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+      padding: 1rem;
+      width: 100%;
+      height: 100vh;
+      box-sizing: border-box;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+      z-index: -1;
+    }
+
+    /* 标题样式 */
+    h2 {
+      font-size: 2rem;
+      margin: 1rem 0 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff6f61, #48c6ef);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    /* 标签导航样式 */
+    .tabs-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      box-sizing: border-box;
+    }
+
+    /* 修改标签导航样式 */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      gap: 0.5rem;
+      background: rgba(0, 0, 0, 0.04);
+      padding: 0.2rem;
+      border-radius: 16px;
+      position: relative;
+      width: fit-content;
+      min-width: 200px;
+    }
+
+    /* 移除原来的背景滑块 */
+    .tabs::before {
+      display: none;
+    }
+
+    /* 修改标签样式 */
+    .tab {
+      position: relative;
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 12px;
+      font-weight: 500;
+      color: #666;
+      min-width: 70px;
+      text-align: center;
+      margin: 0.2rem;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      background: transparent;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 选中状态样式 */
+    .tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    /* 悬停效果 */
+    .tab:hover:not(.active) {
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      transform: translateY(-1px);
+    }
+
+    /* 点击效果 */
+    .tab:active {
+      transform: translateY(0);
+    }
+
+    /* 内容区域样式 */
+    .nav-links-container {
+      flex: 1;
+      overflow: hidden;  /* 改为 hidden */
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;  /* 添加相对定位 */
+    }
+
+    .content-wrapper {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;  /* 添加横向隐藏 */
+      padding-top: 1rem;
+    }
+
+    .content {
+      display: none;
+      padding: 0 1rem 1rem;
+      width: 100%;  /* 确保内容宽度为100% */
+      box-sizing: border-box;  /* 添加盒模型设置 */
+      position: absolute;  /* 使用绝对定位 */
+      left: 0;
+      top: 0;
+    }
+
+    .content.active {
+      display: block;
+      position: relative;  /* 活动内容使用相对定位 */
+    }
+
+    /* 按钮网格布局 */
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 0 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible;
+      height: auto;
+    }
+
+    /* 按钮样式 */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      font-size: 1.05rem;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: flex-start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 3rem;
+      max-width: 100%;
+      padding-right: 1rem;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .button:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    }
+
+    .button:active {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+    }
+
+    /* 添加按钮内容容器 */
+    .button span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-left: 0.5rem;
+    }
+
+    /* 滚动条样式 */
+    .content-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 3px;
+    }
+
+    .content-wrapper::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    /* 动画效果 */
+    @keyframes slideInRight {
+      from { 
+        transform: translateX(30px); 
+        opacity: 0; 
+      }
+      to { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideInLeft {
+      from { 
+        transform: translateX(-30px); 
+        opacity: 0; 
+      }
+      to { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+    }
+
+    @keyframes slideOutRight {
+      from { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+      to { 
+        transform: translateX(30px); 
+        opacity: 0; 
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from { 
+        transform: translateX(0); 
+        opacity: 1; 
+      }
+      to { 
+        transform: translateX(-30px); 
+        opacity: 0; 
+      }
+    }
+
+    .content[class*="slide-"] {
+      display: block;
+      animation: 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      width: 100%;  /* 确保动画时内容宽度为100% */
+    }
+
+    .content.slide-in-right { animation-name: slideInRight; }
+    .content.slide-in-left { animation-name: slideInLeft; }
+    .content.slide-out-right { animation-name: slideOutRight; }
+    .content.slide-out-left { animation-name: slideOutLeft; }
+
+    /* 响应式布局 */
+    @media (max-width: 768px) {
+      .container { 
+        padding: 0.5rem;
+      }
+      
+      .header {
+        padding: 0.5rem;
+      }
+
+      .main-content {
+        padding: 0.5rem;
+        height: calc(100vh - 60px);
+      }
+      
+      .search-container {
+        margin-bottom: 1.5rem !important;
+      }
+
+      .content-wrapper { 
+        height: calc(100vh - 180px);
+        margin-top: 0rem;
+      }
+      
+      .button-grid {
+        gap: 0.6rem;
+        padding: 0.5rem;
+      }
+      
+      .quick-link {
+        padding: 0.6rem 1rem;
+        height: 2.6rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0.3rem;
+      }
+      
+      .header {
+        padding: 0.3rem;
+      }
+
+      .main-content {
+        padding: 0.3rem !important;
+        gap: 0 !important;
+      }
+      
+      .content-wrapper {
+        height: calc(100vh - 210px);
+        margin-top: 1rem;
+        padding-top: 0;
+      }
+
+      .button {
+        height: 2.7rem;
+      }
+      
+      .button-grid {
+        gap: 0.6rem;
+        padding: 0.4rem;
+      }
+
+      .header-actions {
+        gap: 0.4rem;
+      }
+
+      .action-button, .header-button {
+        padding: 0.4rem;
+      }
+
+      .action-button {
+        font-size: 0.9rem;
+      }
+
+      /* 搜索框样式 */
+      .search-container {
+        padding: 0.2rem !important;
+      }
+
+      .search-box {
+        padding: 0.6rem;
+        padding-left: 0;
+        font-size: 0.95rem;
+      }
+
+      .search-engine {
+        padding: 0.4rem 0.6rem;
+      }
+
+      /* 移动端标签样式 */
+      .tabs {
+        display: none !important;
+      }
+      
+      .mobile-tabs-select {
+        display: block !important;
+      }
+      
+      .tabs::before {
+        display: none;
+      }
+    }
+
+    /* 修改搜索框容器样式 */
+    .search-container {
+      margin: 0 auto 2rem;
+      width: 100%;
+      max-width: 800px;
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      padding: 0.3rem;
+      gap: 0.3rem;
+    }
+
+    /* 搜索引擎选择器样式 */
+    .search-engine {
+      order: -1; /* 将搜索引擎按钮移到最前面 */
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.5rem 0.8rem;
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: auto;
+      border-radius: 8px;
+    }
+
+    .search-engine:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #4f46e5;
+    }
+
+    /* 搜索框样式 */
+    .search-box {
+      flex: 1;
+      padding: 0.8rem;
+      padding-left: 0;
+      font-size: 1.1rem;
+      border: none;
+      background: none;
+      outline: none;
+      min-width: 0; /* 允许输入框缩小 */
+    }
+
+    /* 搜索按钮样式 */
+    .search-button {
+      padding: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #6366f1;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .search-button:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 480px) {
+      .search-container {
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .search-engine {
+        padding: 0.4rem 0.6rem;
+      }
+
+      .search-box {
+        padding: 0.6rem;
+        padding-left: 0;
+        font-size: 1rem;
+      }
+
+      .search-button {
+        padding: 0.4rem;
+      }
+
+      #currentEngineIcon {
+        font-size: 1rem;
+      }
+
+      #currentEngineName {
+        font-size: 0.9rem;
+      }
+    }
+
+    #currentEngineIcon {
+      font-size: 1.1rem;
+    }
+
+    #currentEngineName {
+      font-size: 0.95rem;
+    }
+
+    /* 搜索引擎下拉菜单 */
+    .engine-dropdown {
+      position: absolute;
+      left: 0.5rem;  /* 调整下拉菜单位置 */
+      top: calc(100% + 0.5rem);
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem;
+      display: none;
+      z-index: 1000;
+      min-width: 150px;
+    }
+
+    .engine-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1rem;
+    }
+
+    .engine-option:hover {
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    /* 确保下拉菜单显示/隐藏的样式存在 */
+    .engine-dropdown.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 新增样式 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #ff6f61, #48c6ef);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .bookmarks-link {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .bookmarks-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    /* 修改主内容区域样式 */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 80px); /* 减去header的高度 */
+      padding: 1rem 2rem;
+      overflow: hidden;
+    }
+
+    /* 修改快速访问区域样式 */
+    .quick-access {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* 修改快速访问列表的布局样式 */
+    .quick-links {
+      overflow-y: auto;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.8rem;
+      margin-right: 4px;
+      height: 100%; /* 使用固定高度而不是 flex */
+      align-content: start; /* 让网格从顶部开始排列 */
+    }
+
+    .quick-access-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      flex-shrink: 0; /* 防止头部被压缩 */
+    }
+
+    .quick-access-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-button {
+      padding: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6366f1;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .action-button:hover {
+      background: rgba(99, 102, 241, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .action-button span {
+      font-size: 0.9rem;
+    }
+
+    /* 添加按钮内容容器 */
+    .button-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;  /* 图标和文字之间的间距 */
+    }
+
+    .edit-text, .done-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .action-button svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .action-button:hover {
+      background: rgba(99, 102, 241, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .action-button.editing {
+      background: rgba(99, 102, 241, 0.2);
+    }
+
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.8rem 1rem;  /* 减小内边距 */
+      font-size: 1rem;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: flex-start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 2.8rem;  /* 减小高度 */
+      position: relative;
+    }
+
+    .quick-link:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    }
+
+    .quick-link-content {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: inherit;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .quick-link-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+    }
+
+    .quick-link-icon img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .quick-link-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 修改编辑和删除按钮的样式 */
+    .edit-action-button {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.2s ease;
+    }
+
+    /* 编辑按钮样式 - 使用较柔和的蓝绿色 */
+    .edit-action-button.edit {
+      background: #0ea5e9;  /* 明亮的青色 */
+    }
+
+    .edit-action-button.edit:hover {
+      background: #0284c7;
+    }
+
+    /* 删除按钮样式 - 使用较柔和的玫瑰红 */
+    .edit-action-button.delete {
+      background: #f43f5e;  /* 玫瑰红 */
+    }
+
+    .edit-action-button.delete:hover {
+      background: #e11d48;
+    }
+
+    /* 调整按钮组的背景 */
+    .edit-actions {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      gap: 0.4rem;
+      padding: 0.3rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+    }
+
+    /* 添加这个类来显示编辑按钮 */
+    .quick-link.editing .edit-actions {
+      display: flex;
+    }
+
+    /* 调整图标颜色和大小 */
+    .edit-action-button svg {
+      stroke: white;
+      stroke-width: 2.2;
+      width: 15px;
+      height: 15px;
+    }
+
+    /* 添加按钮阴影效果 */
+    .edit-action-button {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-action-button:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* 修改弹窗样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    /* 修改 modal-content 样式 */
+    .modal-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px; /* 增加最大宽度 */
+      max-height: 90vh; /* 添加最大高度 */
+      overflow-y: auto; /* 添加垂直滚动 */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 移动端样式调整 */
+    @media (max-width: 768px) {
+      .modal {
+        padding: 1rem;
+      }
+
+      .modal-content {
+        width: calc(100% - 2rem);
+        max-height: 85vh;
+        padding: 1.2rem;
+      }
+
+      .header {
+        padding: 0.4rem 1rem;
+      }
+    }
+
+    /* 小屏幕手机样式调整 */
+    @media (max-width: 480px) {
+      .modal-content {
+        width: calc(100% - 2rem);
+        padding: 1rem;
+      }
+
+      .header {
+        padding: 0.4rem 1rem;
+      }
+    }
+
+    /* 图标输入组样式 */
+    .icon-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Select 组件样式 */
+    .form-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 14px;
+      padding: 0.8rem;
+      padding-right: 2.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #333;
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-group select:hover {
+      border-color: #6366f1;
+    }
+
+    .form-group select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    /* 图标选择下拉框特殊样式 */
+    .icon-input-group select {
+      width: auto;
+      min-width: 100px;
+      margin-right: 0.5rem;
+    }
+
+    .emoji-picker {
+      display: none;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+
+    .emoji-picker.show {
+      display: grid;
+    }
+
+    .emoji-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      font-size: 1.2rem;
+    }
+
+    .emoji-item:hover {
+      background: #f3f4f6;
+    }
+
+    /* 自定义滚动条样式 */
+    .quick-links::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .quick-links::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    .quick-links::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 4px;
+    }
+
+    .quick-links::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 1rem;
+      }
+      
+      .quick-links {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+        padding: 0.8rem;
+      }
+
+      .quick-link {
+        height: 3rem;
+      }
+
+      .edit-actions {
+        padding: 0.4rem;
+        gap: 0.5rem;
+      }
+
+      .edit-action-button {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 0.8rem;
+      }
+      
+      .quick-links {
+        gap: 0.6rem;
+        padding: 0.6rem;
+      }
+    }
+
+    /* 右键菜单样式 */
+    .context-menu {
+      position: fixed;
+      background: white;
+      border-radius: 8px;
+      padding: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      z-index: 1000;
+      min-width: 120px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.8rem;
+      cursor: pointer;
+      border-radius: 6px;
+      color: #333;
+      transition: all 0.2s ease;
+    }
+
+    .menu-item:hover {
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .menu-item.delete {
+      color: #f43f5e;
+    }
+
+    .menu-item.delete:hover {
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    /* 添加长按高亮效果 */
+    .quick-link.active {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    }
+
+    @media (max-width: 768px) {
+      .context-menu {
+        min-width: 60px;
+      }
+
+      .context-menu.show {
+        transform: translateY(0);
+      }
+
+      .menu-item {
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+    }
+
+    /* 修改编辑状态下的快速访问项样式 */
+    .quick-link {
+      position: relative;
+    }
+
+    .edit-actions {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      gap: 0.4rem;
+      padding: 0.3rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+    }
+
+    .editing .quick-link .edit-actions {
+      display: flex;
+    }
+
+    /* 编辑按钮激活状态 */
+    .edit-button.active {
+      background: rgba(99, 102, 241, 0.3);
+      color: #4f46e5;
+    }
+
+    @media (max-width: 768px) {
+      .edit-actions {
+        padding: 0.4rem;
+        gap: 0.5rem;
+      }
+
+      .edit-action-button {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    /* 修改编辑按钮和操作按钮的样式 */
+    .edit-actions {
+      display: none;  /* 默认隐藏 */
+    }
+
+    /* 移动端编辑状态显示按钮 */
+    @media (max-width: 768px) {
+      .editing .quick-link .edit-actions {
+        display: flex;
+      }
+    }
+
+    /* PC端右键菜单样式保持不变 */
+    .context-menu {
+      display: none;
+    }
+
+    @media (min-width: 769px) {
+      .context-menu {
+        position: fixed;
+        background: white;
+        border-radius: 8px;
+        padding: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 120px;
+      }
+    }
+
+    /* 修改编辑按钮的 HTML 结构 */
+    .edit-button {
+      display: none;
+    }
+
+    .button-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .edit-button .done-content {
+      display: none;
+    }
+
+    .edit-button.active .edit-content {
+      display: none;
+    }
+
+    .edit-button.active .done-content {
+      display: flex;
+    }
+
+    .edit-button span {
+      font-size: 0.9rem;
+    }
+
+    /* 编辑状态下的样式 */
+    .edit-button.active {
+      background: rgba(99, 102, 241, 0.2);
+      color: #4f46e5;
+    }
+
+    /* 添加弹窗显示样式 */
+    .modal.show {
+      display: flex;
+    }
+
+    /* 添加基础表单样式 */
+    .modal-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #666;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .modal-footer {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .modal-button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .cancel-button {
+      background: #f3f4f6;
+      color: #666;
+    }
+
+    .save-button {
+      background: #6366f1;
+      color: white;
+    }
+
+    .save-button:hover {
+      background: #4f46e5;
+    }
+
+    .cancel-button:hover {
+      background: #e5e7eb;
+    }
+
+    /* 合并按钮相关的基础样式 */
+    .action-button,
+    .edit-action-button,
+    .modal-button {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    /* 添加头部按钮样式 */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .header-button {
+      padding: 0.5rem;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.1);
+      border: none;
+      cursor: pointer;
+      color: #6366f1;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-button:hover {
+      background: rgba(99, 102, 241, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* 设置弹窗样式 */
+    .settings-content {
+      padding: 1rem 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .settings-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-section h4 {
+      margin: 0 0 1rem;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .settings-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .settings-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .settings-button:hover {
+      background: rgba(99, 102, 241, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .settings-button svg {
+      flex-shrink: 0;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .settings-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 配置文本区域样式 */
+    .config-text-area {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      max-height: 300px; /* 添加最大高度 */
+      overflow: hidden; /* 防止内容溢出 */
+    }
+
+    .config-text-area textarea {
+      width: 90%;
+      width: -webkit-fill-available;
+      height: 150px; /* 调整默认高度 */
+      max-height: 250px; /* 添加最大高度 */
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+      background: white;
+      overflow-y: auto; /* 添加垂直滚动 */
+      line-height: 1.4; /* 添加行高 */
+    }
+
+    .config-text-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .text-action-button {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      color: #6366f1;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .text-action-button:hover {
+      background: #f3f4f6;
+    }
+
+    .text-action-button svg {
+      flex-shrink: 0;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 480px) {
+      .config-text-actions {
+        flex-wrap: wrap;
+      }
+      
+      .text-action-button {
+        flex: 1;
+        min-width: 80px;
+        justify-content: center;
+      }
+    }
+
+    /* 搜索引擎列表样式 */
+    .search-engines-list {
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .search-engine-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .search-engine-info {
+      flex: 1;
+    }
+
+    .engine-name {
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+
+    .engine-url {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .engine-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .engine-action-button {
+      padding: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6366f1;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .engine-action-button:hover {
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .engine-action-button.delete {
+      color: #ef4444;
+    }
+
+    .engine-action-button.delete:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* 添加搜索引擎按钮样式 */
+    .add-engine-button {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      gap: 0.5rem;
+      background: #f8f9fa;
+      color: #6366f1;
+      border: 2px dashed #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .add-engine-button:hover {
+      background: #f1f5f9;
+      border-color: #6366f1;
+    }
+
+    /* 表单提示文本样式 */
+    .form-hint {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.4rem;
+    }
+
+    /* 修改搜索引擎列表项样式 */
+    .search-engine-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .engine-name {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .engine-url {
+      font-size: 0.85rem;
+      color: #666;
+      word-break: break-all;
+    }
+
+    /* 移动端下拉选择样式 */
+    .mobile-tabs-select {
+      display: none;
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      background: white;
+      color: #333;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 14px;
+      cursor: pointer;
+    }
+
+    /* 修改响应式布局相关样式 */
+    @media (max-width: 480px) {
+      .tabs {
+        display: none !important; /* 强制隐藏标签栏 */
+      }
+      
+      .mobile-tabs-select {
+        display: block !important; /* 强制显示下拉选择 */
+      }
+      
+      /* 移除原有的标签相关样式 */
+      .tabs::before {
+        display: none;
+      }
+    }
+
+    /* ... existing code ... */
+    .settings-button.danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .settings-button.danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* 修改 loading 动画样式 */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-dots {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .loading-dots span {
+      width: 4px;
+      height: 4px;
+      background: currentColor;
+      border-radius: 50%;
+      animation: dots 1s infinite;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dots {
+      0%, 100% { transform: scale(0.5); opacity: 0.5; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 分组列表样式 */
+    .categories-list {
+      margin-bottom: 1rem;
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .category-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.4rem 0.4rem 0.4rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background: white;
+      transition: background 0.2s;
+    }
+
+    .category-item.dragging {
+      opacity: 0.5;
+      background: #f8fafc;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .drag-handle:hover {
+      color: #64748b;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .category-item:last-child {
+      border-bottom: none;
+    }
+
+    .category-name {
+      font-weight: 500;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .category-actions {
+      display: flex;
+    }
+
+    .category-action-button {
+      padding: 0.4rem;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .category-action-button:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #333;
+    }
+
+    .category-action-button.delete:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .add-category-button {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    /* 修改分组管理弹窗样式 */
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      height: auto;
+    }
+
+    /* 分组列表容器样式 */
+    .categories-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* 修改列表包装器样式 */
+    .categories-list-wrapper {
+      flex: 1;
+      overflow-y: auto;  /* 允许垂直滚动 */
+      min-height: 100px;  /* 设置最小高度 */
+      max-height: calc(90vh - 200px);  /* 限制最大高度，减去头部、底部和按钮的高度 */
+    }
+
+    /* 分组列表样式 */
+    .categories-list {
+      margin-bottom: 0;
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* 添加分组按钮固定在底部 */
+    .categories-section .add-category-button {
+      margin-top: 0;  /* 移除顶部间距 */
+    }
+
+    /* 分组列表滚动条样式 */
+    .categories-list-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .categories-list-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 3px;
+    }
+
+    .categories-list-wrapper::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    /* 修改添加按钮统一样式 */
+    .add-button {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      gap: 0.5rem;
+      background: #f8f9fa;
+      color: #6366f1;
+      border: 2px dashed #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .add-button:hover {
+      background: #f1f5f9;
+      border-color: #6366f1;
+    }
+
+    /* 移除旧的样式 */
+    .add-category-button {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0;
+    }
+
+    .add-engine-button {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      gap: 0.5rem;
+      background: #f8f9fa;
+      color: #6366f1;
+      border: 2px dashed #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    /* 添加移动端拖动相关样式 */
+    .category-item {
+      transition: transform 0.2s;
+    }
+
+    .category-item.dragging {
+      opacity: 0.9;
+      background: #f8fafc;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .drag-handle {
+      cursor: grab;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      padding: 0.5rem;
+    }
+
+    /* 移动端样式优化 */
+    @media (max-width: 480px) {
+      .drag-handle {
+        padding: 0.8rem 0.4rem; /* 增大触摸区域 */
+      }
+      
+      .category-action-button {
+        padding: 0.6rem; /* 增大按钮点击区域 */
+      }
+    }
+  </style>
+  <script type="module">
+    import { 
+      defaultSearchEngines as searchEngines,
+      getStoredSearchEngine, 
+      saveSearchEngineSelection,
+      STORAGE_KEYS,
+      bookmarkConfig,
+      getBookmarkConfig,
+      getSearchEngines,
+      getWebDAVConfig,
+      saveWebDAVConfig,
+      generateId,  // 添加 generateId 导入
+    } from './config.js';
+    
+    // 定义全局变量
+    const DEFAULT_ICON = '🔗';
+
+    // 初始化搜索功能
+    function initializeSearch() {
+      const searchBox = document.querySelector('.search-box');
+      const searchButton = document.querySelector('.search-button');
+      const engineButton = document.querySelector('.search-engine');
+      const engineDropdown = document.querySelector('.engine-dropdown');
+      
+      // 初始化搜索引擎下拉菜单
+      initEngineDropdown();
+      
+      // 更新当前搜索引擎显示
+      updateCurrentEngine();
+      
+      // 搜索框回车事件
+      searchBox.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+      
+      // 搜索按钮点击事件
+      searchButton.addEventListener('click', performSearch);
+      
+      // 搜索引擎切换按钮点击事件
+      engineButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        engineDropdown.classList.toggle('show');
+      });
+      
+      // 点击其他地方关闭下拉菜单
+      document.addEventListener('click', () => {
+        engineDropdown.classList.remove('show');
+      });
+    }
+    
+    // 执行搜索
+    function performSearch() {
+      const searchBox = document.querySelector('.search-box');
+      const query = searchBox.value.trim();
+      if (!query) return;
+
+      const engines = getSearchEngines();
+      const currentEngineId = getStoredSearchEngine();
+      const engine = engines.find(e => e.id === currentEngineId);
+      
+      if (engine) {
+        const searchUrl = engine.url.replace('{q}', encodeURIComponent(query));
+        // 修改这里，移除 '_blank'
+        window.location.href = searchUrl;
+      }
+    }
+
+    // 初始化搜索引擎下拉菜单
+      function initEngineDropdown() {
+        const dropdown = document.querySelector('.engine-dropdown');
+        const engines = getSearchEngines();
+        
+        dropdown.innerHTML = engines.map(engine => `
+        <div class="engine-option" data-id="${engine.id}">
+          ${engine.name}
+  </div>
+        `).join('');
+      
+      // 添加点击事件
+      dropdown.querySelectorAll('.engine-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          const engineId = e.currentTarget.dataset.id;
+          saveSearchEngineSelection(engineId);
+          updateCurrentEngine();
+        dropdown.classList.remove('show');
+      });
+      });
+    }
+    
+    // 更新当前搜索引擎显示
+    function updateCurrentEngine() {
+      const currentEngineId = getStoredSearchEngine();
+          const engines = getSearchEngines();
+      const engine = engines.find(e => e.id === currentEngineId);
+      
+          if (engine) {
+        document.getElementById('currentEngineName').textContent = engine.name;
+      }
+    }
+
+    // 页面加载完成后初始化
+    window.addEventListener('DOMContentLoaded', () => {
+      initializeSearch();
+      initializeBookmarks();
+      initializeEventListeners();
+    });
+
+    // 修改导出配置函数
+    function exportConfig() {
+      const config = {
+        searchEngine: getStoredSearchEngine(),
+        searchEngines: getSearchEngines(),
+        bookmarkConfig: getBookmarkConfig()
+      };
+
+      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `config_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 修改导入配置函数
+    async function importConfig(file) {
+      try {
+        const text = await file.text();
+        const config = JSON.parse(text);
+
+        // 导入搜索引擎列表
+        if (config.searchEngines) {
+          localStorage.setItem('searchEngines', JSON.stringify(config.searchEngines));
+        }
+
+        // 导入当前选中的搜索引擎
+        if (config.searchEngine) {
+          saveSearchEngineSelection(config.searchEngine);
+        }
+
+        // 导入收藏夹配置
+        if (config.bookmarkConfig) {
+          localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config.bookmarkConfig));
+        }
+
+        alert('配置导入成功！');
+        location.reload();
+      } catch (error) {
+        console.error('导入配置失败:', error);
+        alert('导入配置失败，请确保文件格式正确！');
+      }
+    }
+
+    // 修改导出到文本框函数
+    function exportConfigToText() {
+      const config = {
+        searchEngine: getStoredSearchEngine(),
+        searchEngines: getSearchEngines(),
+        bookmarkConfig: getBookmarkConfig()
+      };
+      document.getElementById('configText').value = JSON.stringify(config, null, 2);
+    }
+
+    // 表单验证函数
+    function validateForm() {
+      const name = document.getElementById('linkName').value.trim();
+      const url = document.getElementById('linkUrl').value.trim();
+      const icon = document.getElementById('linkIcon').value.trim() || DEFAULT_ICON;
+      
+      if (!name || !url) {
+        alert('请填写完整信息');
+        return null;
+      }
+
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('请输入有效的URL地址');
+          return null;
+      }
+
+      return { name, url, icon };
+    }
+
+    // 重置表单函数
+    function resetForm() {
+      document.getElementById('linkName').value = '';
+      document.getElementById('linkUrl').value = '';
+      document.getElementById('linkIcon').value = '';
+      document.getElementById('iconType').value = 'emoji';
+      document.getElementById('emojiPicker').classList.add('show');
+    }
+
+    // 初始化标签指示器
+    function updateTabIndicator() {
+      const activeTab = document.querySelector('.tab.active');
+      const tabsContainer = document.querySelector('.tabs');
+      if (!activeTab || !tabsContainer) return;
+      
+      if (window.innerWidth <= 480) {
+        // 移动端竖向布局保持不变
+        const tabHeight = activeTab.offsetHeight;
+        const tabTop = activeTab.offsetTop;
+        const tabs = document.querySelectorAll('.tab');
+        const tabCount = tabs.length;
+        const slideHeight = (100 / tabCount).toFixed(2);
+        
+        tabsContainer.style.setProperty('--slide-top', `${tabTop}px`);
+        tabsContainer.style.setProperty('--slide-height', `${slideHeight}%`);
+        tabsContainer.style.removeProperty('--slide-left');
+        tabsContainer.style.removeProperty('--slide-width');
+      } else {
+        // PC端横向布局（支持多行）
+        const tabWidth = activeTab.offsetWidth || 0;
+        const tabHeight = activeTab.offsetHeight || 0;
+        const tabLeft = activeTab.offsetLeft || 0;
+        const tabTop = activeTab.offsetTop || 0;
+        
+        // 设置指示器的位置和大小
+        tabsContainer.style.setProperty('--slide-left', `${tabLeft}px`);
+        tabsContainer.style.setProperty('--slide-width', `${tabWidth}px`);
+        tabsContainer.style.setProperty('--slide-top', `${tabTop}px`);
+        tabsContainer.style.setProperty('--slide-height', `${tabHeight}px`);
+      }
+    }
+
+    // 添加窗口大小变化监听
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateTabIndicator, 100);
+    });
+
+    // 修改初始化事件监听函数
+    function initializeEventListeners() {
+      // 设置按钮点击事件
+      document.getElementById('settingsButton').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.add('show');
+        // 初始化搜索引擎列表
+        initSearchEnginesList();
+        // 更新配置文本框
+        exportConfigToText();
+        // 加载 WebDAV 配置
+        loadWebDAVConfig();
+      });
+
+      // 关闭设置按钮点击事件
+      document.getElementById('closeSettingsButton').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.remove('show');
+      });
+
+      // 添加分组按钮
+      document.getElementById('addCategoryBtn').addEventListener('click', () => {
+        document.getElementById('categoryModal').classList.add('show');
+        initializeCategoriesList();
+      });
+
+      document.getElementById('closeCategoryModal').addEventListener('click', () => {
+        document.getElementById('categoryModal').classList.remove('show');
+      });
+
+      document.getElementById('addNewCategoryBtn').addEventListener('click', () => {
+        document.getElementById('editCategoryModal').classList.add('show');
+        // 重置表单
+        document.getElementById('editCategoryTitle').textContent = '添加分组';
+        document.getElementById('categoryName').value = '';
+        document.getElementById('categoryId').value = '';
+      });
+
+      // 添加链接按钮
+      document.getElementById('addBookmarkBtn').addEventListener('click', () => {
+        updateCategorySelect();
+        // 初始化 emoji picker 的显示状态
+        document.getElementById('iconType').value = 'emoji';
+        document.getElementById('emojiPicker').classList.add('show');
+        document.getElementById('addLinkModal').classList.add('show');
+      });
+
+      // 取消按钮
+      document.getElementById('cancelCategoryButton').addEventListener('click', () => {
+        // 修改这里，从 addCategoryModal 改为 editCategoryModal
+        document.getElementById('editCategoryModal').classList.remove('show');
+        // 清空输入框
+        document.getElementById('categoryName').value = '';
+        document.getElementById('categoryId').value = '';
+      });
+
+      document.getElementById('cancelButton').addEventListener('click', () => {
+        document.getElementById('addLinkModal').classList.remove('show');
+          resetForm();
+      });
+
+      // 保存按钮
+      document.getElementById('saveCategoryButton').addEventListener('click', saveCategory);
+      document.getElementById('saveButton').addEventListener('click', saveBookmark);
+
+      // 图标类型切换
+      document.getElementById('iconType').addEventListener('change', (e) => {
+        const emojiPicker = document.getElementById('emojiPicker');
+        if (e.target.value === 'emoji') {
+          emojiPicker.classList.add('show');
+        } else {
+          emojiPicker.classList.remove('show');
+        }
+      });
+
+      // Emoji 选择
+      document.querySelectorAll('.emoji-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.getElementById('linkIcon').value = item.dataset.emoji;
+        });
+      });
+
+      // 搜索引擎管理相关事件
+      document.getElementById('addEngineBtn').addEventListener('click', () => {
+        document.getElementById('addEngineModal').classList.add('show');
+      });
+
+      document.getElementById('cancelEngineButton').addEventListener('click', () => {
+        document.getElementById('addEngineModal').classList.remove('show');
+        document.getElementById('engineName').value = '';
+        document.getElementById('engineUrl').value = '';
+      });
+
+      document.getElementById('saveEngineButton').addEventListener('click', addSearchEngine);
+
+      // 导出配置按钮
+      document.getElementById('exportConfigBtn').addEventListener('click', exportConfig);
+      
+      // 导入配置按钮
+      document.getElementById('importConfigBtn').addEventListener('click', () => {
+        document.getElementById('configFileInput').click();
+      });
+      
+      // 文件输入改变事件
+      document.getElementById('configFileInput').addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          importConfig(e.target.files[0]);
+        }
+      });
+      
+      // 重置配置按钮
+      document.getElementById('resetConfigBtn').addEventListener('click', resetConfig);
+      
+      // 复制配置按钮
+      document.getElementById('copyConfigBtn').addEventListener('click', copyConfigText);
+      
+      // 从文本导入按钮
+      document.getElementById('importFromTextBtn').addEventListener('click', importConfigFromText);
+    }
+
+    // 保存书签
+    function saveBookmark() {
+      const formData = validateForm();
+      if (!formData) return;
+
+      const categoryId = document.getElementById('bookmarkCategory').value;
+      const config = getBookmarkConfig();
+      
+      const category = config.categories.find(c => c.id === categoryId);
+      if (!category) {
+        alert('分组不存在');
+          return;
+        }
+      
+      // 添加唯一ID
+      formData.id = generateId(categoryId + '_');
+      category.links.push(formData);
+      localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+      
+      // 重新加载页面
+      location.reload();
+    }
+
+    // 编辑书签
+    function editBookmark(categoryId, linkId) {
+      const config = getBookmarkConfig();
+      const category = config.categories.find(c => c.id === categoryId);
+      if (!category) return;
+      
+      const bookmark = category.links.find(link => link.id === linkId);
+      if (!bookmark) return;
+
+      // 更新分组选择下拉框
+      updateCategorySelect();
+
+      // 修改弹窗标题
+      document.querySelector('#addLinkModal .modal-header h3').textContent = '编辑链接';
+
+      // 填充表单
+      document.getElementById('bookmarkCategory').value = categoryId;
+      document.getElementById('linkName').value = bookmark.name;
+      document.getElementById('linkUrl').value = bookmark.url;
+      document.getElementById('linkIcon').value = bookmark.icon;
+      
+      // 显示 emoji 面板
+      const iconType = document.getElementById('iconType');
+      const emojiPicker = document.getElementById('emojiPicker');
+      iconType.value = 'emoji';
+      emojiPicker.classList.add('show');
+      
+      // 显示弹窗
+      document.getElementById('addLinkModal').classList.add('show');
+
+      // 修改保存按钮行为
+      const saveButton = document.getElementById('saveButton');
+      const originalClick = saveButton.onclick;
+      saveButton.onclick = () => {
+        const formData = validateForm();
+        if (!formData) return;
+
+        // 获取新的分组ID
+        const newCategoryId = document.getElementById('bookmarkCategory').value;
+        
+        // 如果分组发生变化
+        if (newCategoryId !== categoryId) {
+          // 从原分组中删除
+          const linkIndex = category.links.findIndex(link => link.id === linkId);
+          if (linkIndex !== -1) {
+            category.links.splice(linkIndex, 1);
+          }
+          
+          // 添加到新分组
+          const newCategory = config.categories.find(c => c.id === newCategoryId);
+          if (newCategory) {
+            formData.id = linkId;  // 保持原有ID
+            newCategory.links.push(formData);
+          }
+        } else {
+          // 在原分组中更新
+          formData.id = linkId;
+          const linkIndex = category.links.findIndex(link => link.id === linkId);
+          category.links[linkIndex] = formData;
+        }
+
+        localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+
+        // 恢复原始点击事件
+        saveButton.onclick = originalClick;
+
+        // 恢复弹窗标题
+        document.querySelector('#addLinkModal .modal-header h3').textContent = '添加链接';
+
+        // 关闭弹窗
+        document.getElementById('addLinkModal').classList.remove('show');
+        resetForm();
+
+        // 重新加载页面
+        location.reload();
+      };
+    }
+
+    // 删除书签
+    function deleteBookmark(categoryId, linkId) {
+      if (!confirm('确定要删除这个链接吗？')) return;
+
+      const config = getBookmarkConfig();
+      const category = config.categories.find(c => c.id === categoryId);
+      if (!category) return;
+      
+      const linkIndex = category.links.findIndex(link => link.id === linkId);
+      if (linkIndex === -1) return;
+      
+      category.links.splice(linkIndex, 1);
+      localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+
+      // 重新加载页面
+      location.reload();
+    }
+
+    // 保存分组
+    function saveCategory() {
+      const nameInput = document.getElementById('categoryName');
+      const idInput = document.getElementById('categoryId');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        alert('请输入分组名称');
+        return;
+      }
+      
+      const config = getBookmarkConfig();
+      const categoryId = idInput.value;
+      
+      if (categoryId) {
+        // 编辑现有分组
+        const category = config.categories.find(c => c.id === categoryId);
+        if (category) {
+          category.name = name;
+        }
+      } else {
+        // 添加新分组
+        config.categories.push({
+          id: generateId(),
+          name: name,
+          links: []
+        });
+      }
+      
+      localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+      document.getElementById('editCategoryModal').classList.remove('show');
+      initializeCategoriesList();
+      initializeBookmarks(); // 刷新主界面
+    }
+
+    // 初始化标签页和内容
+    function initializeBookmarks() {
+      const currentBookmarkConfig = getBookmarkConfig();
+      
+      // 生成标签页
+      const tabsContainer = document.querySelector('.tabs');
+      const mobileSelect = document.querySelector('.mobile-tabs-select');
+      
+      // 生成PC端标签
+      tabsContainer.innerHTML = currentBookmarkConfig.categories.map((category, index) => 
+        `<div class="tab${index === 0 ? ' active' : ''}" 
+             data-target="${category.id}">
+             ${category.name}
+         </div>`
+      ).join('');
+      
+      // 生成移动端下拉选择
+      mobileSelect.innerHTML = currentBookmarkConfig.categories.map((category, index) => 
+        `<option value="${category.id}"${index === 0 ? ' selected' : ''}>
+           ${category.name}
+         </option>`
+      ).join('');
+
+      // 在生成标签后立即更新标签指示器
+      requestAnimationFrame(() => {
+        updateTabIndicator();
+      });
+
+      // 生成内容区域
+      const contentWrapper = document.querySelector('.content-wrapper');
+      contentWrapper.innerHTML = currentBookmarkConfig.categories.map((category, index) => `
+        <div class="content${index === 0 ? ' active' : ''}" id="${category.id}">
+          <div class="button-grid"></div>
+        </div>
+      `).join('');
+
+      // 生成链接按钮
+      currentBookmarkConfig.categories.forEach(category => {
+        const content = document.getElementById(category.id);
+        if (!content) return;
+        
+        const buttonGrid = content.querySelector('.button-grid');
+        buttonGrid.innerHTML = category.links.map(link => `
+          <a href="${link.url}" 
+             class="button" 
+             data-id="${link.id}"
+             data-category-id="${category.id}"
+             oncontextmenu="showContextMenu(event, this); return false;">
+            ${link.icon} <span>${link.name}</span>
+          </a>
+        `).join('');
+      });
+
+      // 初始化标签事件
+      initializeTabEvents();
+    }
+
+    // 修改 initializeTabEvents 函数
+    function initializeTabEvents() {
+      const tabs = document.querySelectorAll('.tab');
+      const contents = document.querySelectorAll('.content');
+      const mobileSelect = document.querySelector('.mobile-tabs-select');
+      let currentContent = document.querySelector('.content.active');
+      let currentTab = document.querySelector('.tab.active');
+
+      // PC端标签点击事件
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          switchContent(tab.getAttribute('data-target'));
+        });
+      });
+
+      // 移动端下拉选择事件
+      mobileSelect.addEventListener('change', (e) => {
+        switchContent(e.target.value);
+        // 让下拉框失焦
+        e.target.blur();
+      });
+
+      // 内容切换函数
+      function switchContent(targetId) {
+        const nextContent = document.getElementById(targetId);
+        if (currentContent === nextContent) return;
+
+        // 更新标签状态
+        tabs.forEach(t => t.classList.remove('active'));
+        const newTab = Array.from(tabs).find(t => t.getAttribute('data-target') === targetId);
+        if (newTab) {
+          newTab.classList.add('active');
+          updateTabIndicator();
+        }
+
+        // 更新下拉选择
+        mobileSelect.value = targetId;
+
+        // 更新内容显示
+        const currentIndex = Array.from(contents).indexOf(currentContent);
+        const nextIndex = Array.from(contents).indexOf(nextContent);
+        const isMovingRight = nextIndex > currentIndex;
+
+        currentContent.style.display = 'block';
+        currentContent.classList.add(isMovingRight ? 'slide-out-left' : 'slide-out-right');
+
+        setTimeout(() => {
+          contents.forEach(c => {
+            c.classList.remove('active', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
+            c.style.opacity = '';
+            c.style.transform = '';
+            c.style.display = 'none';
+          });
+
+          nextContent.style.display = 'block';
+          nextContent.classList.add('active');
+          nextContent.classList.add(isMovingRight ? 'slide-in-right' : 'slide-in-left');
+
+          currentContent = nextContent;
+          currentTab = newTab;
+        }, 300);
+      }
+    }
+
+    // 添加搜索引擎相关函数
+    function initSearchEnginesList() {
+      const list = document.querySelector('.search-engines-list');
+      const engines = getSearchEngines();
+      
+      list.innerHTML = engines.map(engine => `
+        <div class="search-engine-item" data-id="${engine.id}">
+          <div class="search-engine-info">
+            <div class="engine-name">${engine.name}</div>
+            <div class="engine-url">${engine.url}</div>
+          </div>
+          <div class="engine-actions">
+            <button class="engine-action-button edit" title="编辑">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="engine-action-button delete" title="删除">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // 绑定编辑和删除事件
+      list.querySelectorAll('.engine-action-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = e.target.closest('.search-engine-item').dataset.id;
+          if (button.classList.contains('edit')) {
+            editSearchEngine(id);
+          } else if (button.classList.contains('delete')) {
+            deleteSearchEngine(id);
+          }
+      });
+    });
+    }
+
+    // 修改添加搜索引擎函数
+    function addSearchEngine() {
+      const name = document.getElementById('engineName').value.trim();
+      const url = document.getElementById('engineUrl').value.trim();
+
+      if (!name || !url) {
+        alert('请填写所有字段');
+        return;
+      }
+
+      if (!url.includes('{q}')) {
+        alert('URL 必须包含 {q} 作为搜索关键词的占位符');
+        return;
+      }
+
+      const engines = getSearchEngines();
+      const id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+      
+      // 检查是否已存在同名搜索引擎
+      if (engines.some(e => e.name.toLowerCase() === name.toLowerCase())) {
+        alert('已存在同名的搜索引擎');
+        return;
+      }
+
+      engines.push({ id, name, url });
+      localStorage.setItem('searchEngines', JSON.stringify(engines));
+      
+      document.getElementById('addEngineModal').classList.remove('show');
+      initSearchEnginesList();
+      initEngineDropdown();
+      exportConfigToText(); // 更新配置文本
+    }
+
+    // 修改编辑搜索引擎函数
+    function editSearchEngine(id) {
+      const engines = getSearchEngines();
+      const engine = engines.find(e => e.id === id);
+      if (!engine) return;
+
+      document.getElementById('engineName').value = engine.name;
+      document.getElementById('engineUrl').value = engine.url;
+
+      const modal = document.getElementById('addEngineModal');
+      modal.classList.add('show');
+
+      // 修改保存按钮行为
+      const saveButton = document.getElementById('saveEngineButton');
+      saveButton.onclick = () => {
+        const name = document.getElementById('engineName').value.trim();
+        const url = document.getElementById('engineUrl').value.trim();
+
+        if (!name || !url) {
+          alert('请填写所有字段');
+          return;
+        }
+
+        if (!url.includes('{q}')) {
+          alert('URL 必须包含 {q} 作为搜索关键词的占位符');
+          return;
+        }
+
+        // 检查是否与其他引擎重名
+        if (engines.some(e => e.id !== id && e.name.toLowerCase() === name.toLowerCase())) {
+          alert('已存在同名的搜索引擎');
+          return;
+        }
+
+        // 更新引擎信息
+        const index = engines.findIndex(e => e.id === id);
+        engines[index] = { ...engine, name, url };
+        localStorage.setItem('searchEngines', JSON.stringify(engines));
+
+        modal.classList.remove('show');
+        initSearchEnginesList();
+        initEngineDropdown();
+        exportConfigToText(); // 更新配置文本
+        
+        // 如果编辑的是当前选中的搜索引擎，更新显示
+        const currentEngine = getStoredSearchEngine();
+        if (id === currentEngine) {
+          updateEngineIcon();
+        }
+      };
+    }
+
+    // 修改删除搜索引擎函数
+    function deleteSearchEngine(id) {
+      if (!confirm('确定要删除这个搜索引擎吗？')) return;
+      
+      const engines = getSearchEngines();
+      const engine = engines.find(e => e.id === id);
+      
+      // 检查是否是当前使用的搜索引擎
+      const currentEngine = getStoredSearchEngine();
+      if (id === currentEngine) {
+        alert('无法删除当前正在使用的搜索引擎');
+        return;
+      }
+      
+      // 检查是否是默认引擎
+      if (engine.isDefault) {
+        alert('无法删除默认搜索引擎');
+        return;
+      }
+
+      const newEngines = engines.filter(e => e.id !== id);
+      localStorage.setItem('searchEngines', JSON.stringify(newEngines));
+      initSearchEnginesList();
+      initEngineDropdown();
+      // 更新配置文本
+      exportConfigToText();
+    }
+
+    // 将函数设为全局可访问
+    window.deleteSearchEngine = deleteSearchEngine;
+
+    // 添加重置配置函数
+    function resetConfig() {
+      if (confirm('确定要重置所有配置吗？这将删除所有自定义设置，包括搜索引擎、快速访问链接等。')) {
+        // 清除所有本地存储
+        localStorage.clear();
+        
+        alert('配置已重置，页面将刷新。');
+        location.reload();
+      }
+    }
+
+    // 将函数设为全局可访问
+    window.resetConfig = resetConfig;
+
+    // 添加 loading 控制函数
+    function setButtonLoading(button, isLoading, originalText) {
+      if (isLoading) {
+        button.disabled = true;
+        button.classList.add('loading');
+        // 保存原始内容
+        button.dataset.originalHtml = button.innerHTML;
+        button.innerHTML = `
+          <div class="button-content">
+            <div class="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span>处理中...</span>
+          </div>
+        `;
+      } else {
+        button.disabled = false;
+        button.classList.remove('loading');
+        // 恢复原始内容
+        button.innerHTML = button.dataset.originalHtml;
+      }
+    }
+
+    // 从文本导入配置
+    async function importConfigFromText() {
+      try {
+        const configText = document.getElementById('configText').value.trim();
+        if (!configText) {
+          alert('请先输入配置文本');
+          return;
+        }
+        const config = JSON.parse(configText);
+        await importConfig(new Blob([configText], { type: 'application/json' }));
+      } catch (error) {
+        console.error('导入配置失败:', error);
+        alert('导入配置失败，请确保文本格式正确！');
+      }
+    }
+
+    // 复制配置文本
+    function copyConfigText() {
+      const configText = document.getElementById('configText').value;
+      try {
+        // 创建临时文本区域
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = configText;
+        document.body.appendChild(tempTextArea);
+        
+        // 选择文本
+        tempTextArea.select();
+        tempTextArea.setSelectionRange(0, 99999); // 兼容移动设备
+        
+        // 复制
+        document.execCommand('copy');
+        
+        // 移除临时元素
+        document.body.removeChild(tempTextArea);
+        
+        alert('配置已复制到剪贴板');
+      } catch (err) {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动复制');
+      }
+    }
+
+    // 从剪贴板粘贴
+    async function pasteConfig() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('configText').value = text;
+      } catch (err) {
+        console.error('粘贴失败:', err);
+        alert('粘贴失败，请手动粘贴');
+      }
+    }
+
+    // 显示右键菜单
+    function showContextMenu(e, link) {
+      e.preventDefault();
+      const id = link.dataset.id;
+      const categoryId = link.dataset.categoryId;  // 修改为 categoryId
+
+      // 设置菜单位置
+      const menu = document.getElementById('quickLinkMenu');
+      const rect = link.getBoundingClientRect();
+      const x = e.clientX;
+      const y = e.clientY;
+
+      // 确保菜单不会超出视窗
+      const menuWidth = 150;
+      const menuHeight = 100;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      menu.style.left = `${Math.min(x, windowWidth - menuWidth)}px`;
+      menu.style.top = `${Math.min(y, windowHeight - menuHeight)}px`;
+      menu.style.display = 'block';
+
+      // 绑定菜单项点击事件
+      const editItem = menu.querySelector('.menu-item.edit');
+      const deleteItem = menu.querySelector('.menu-item.delete');
+
+      editItem.onclick = () => {
+        editBookmark(categoryId, id);  // 使用 categoryId
+        menu.style.display = 'none';
+      };
+
+      deleteItem.onclick = () => {
+        deleteBookmark(categoryId, id);  // 使用 categoryId
+        menu.style.display = 'none';
+      };
+
+      // 点击其他地方关闭菜单
+      const closeMenu = (e) => {
+        if (!menu.contains(e.target)) {
+          menu.style.display = 'none';
+          document.removeEventListener('click', closeMenu);
+        }
+      };
+
+      // 延迟添加点击事件，避免立即触发
+      setTimeout(() => {
+        document.addEventListener('click', closeMenu);
+      }, 0);
+    }
+
+    // 将函数设为全局可访问
+    window.showContextMenu = showContextMenu;
+    window.editBookmark = editBookmark;
+    window.deleteBookmark = deleteBookmark;
+
+    // 更新分组选择下拉框
+    function updateCategorySelect() {
+      const select = document.getElementById('bookmarkCategory');
+      const config = getBookmarkConfig();
+      select.innerHTML = config.categories.map(category => 
+        `<option value="${category.id}">${category.name}</option>`
+      ).join('');
+    }
+
+    // 修改 backupToWebDAV 函数
+    async function backupToWebDAV() {
+      const button = document.getElementById('backupToWebDAVBtn');
+      const originalHtml = button.innerHTML;
+
+      // 获取实时输入的 WebDAV 配置
+      const url = document.getElementById('webdavUrl').value.trim();
+      const username = document.getElementById('webdavUsername').value.trim();
+      const password = document.getElementById('webdavPassword').value.trim();
+      const filename = document.getElementById('webdavFilename').value.trim() || 'nav_backup.json';
+
+      if (!url || !username || !password) {
+        alert('请填写所有 WebDAV 配置项');
+        return;
+      }
+
+      // 保存成功的配置，包括文件名
+      await saveWebDAVConfig({ url, username, password, filename });
+
+      setButtonLoading(button, true);
+
+      try {
+        const backupData = {
+          searchEngine: getStoredSearchEngine(),
+          searchEngines: getSearchEngines(),
+          bookmarkConfig: getBookmarkConfig(),
+          timestamp: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+
+        const response = await fetch(`${url}/${filename}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Basic ' + btoa(username + ':' + password),
+            'Content-Type': 'application/json'
+          },
+          body: blob
+        });
+
+        if (response.ok) {
+          if (response.status === 201) {
+            alert('备份成功！\n备份时间：' + new Date().toLocaleString());
+          } else {
+            alert('备份可能不成功，请到 WebDAV 核实！\n备份时间：' + new Date().toLocaleString());
+          }
+        } else {
+          alert('备份失败：' + response.statusText);
+        }
+      } catch (error) {
+        alert('备份失败：' + error.message);
+      } finally {
+        setButtonLoading(button, false, originalHtml);
+      }
+    }
+
+    // 修改 restoreFromWebDAV 函数
+    async function restoreFromWebDAV() {
+      const button = document.getElementById('restoreFromWebDAVBtn');
+      const originalHtml = button.innerHTML;
+
+      // 获取实时输入的 WebDAV 配置
+      const url = document.getElementById('webdavUrl').value.trim();
+      const username = document.getElementById('webdavUsername').value.trim();
+      const password = document.getElementById('webdavPassword').value.trim();
+      const filename = document.getElementById('webdavFilename').value.trim() || 'nav_backup.json';
+
+      if (!url || !username || !password) {
+        alert('请填写所有 WebDAV 配置项');
+        return;
+      }
+
+      // 保存成功的配置，包括文件名
+      await saveWebDAVConfig({ url, username, password, filename });
+
+      setButtonLoading(button, true);
+
+      try {
+        const backupResponse = await fetch(`${url}/${filename}`, {
+          headers: {
+            'Authorization': 'Basic ' + btoa(username + ':' + password)
+          }
+        });
+
+        if (backupResponse.status === 404) {
+          throw new Error('未找到备份文件');
+        }
+
+        if (!backupResponse.ok) {
+          throw new Error('获取备份文件失败');
+        }
+
+        const backupData = await backupResponse.json();
+        
+        if (!backupData.timestamp) {
+          throw new Error('备份文件格式不正确');
+        }
+
+        // 显示备份时间并确认恢复
+        const backupTime = new Date(backupData.timestamp).toLocaleString();
+        if (!confirm(`确定要恢复以下备份吗？\n备份时间：${backupTime}`)) {
+          setButtonLoading(button, false, originalHtml);
+          return;
+        }
+        
+        // 恢复配置
+        if (backupData.searchEngines) {
+          localStorage.setItem('searchEngines', JSON.stringify(backupData.searchEngines));
+        }
+        if (backupData.searchEngine) {
+          localStorage.setItem('selectedSearchEngine', backupData.searchEngine);
+        }
+        if (backupData.bookmarkConfig) {
+          localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(backupData.bookmarkConfig));
+        }
+
+        alert('恢复成功，页面将刷新！');
+        location.reload();
+      } catch (error) {
+        alert('恢复失败：' + error.message);
+        setButtonLoading(button, false, originalHtml);
+      }
+    }
+
+    // 修改事件监听
+    document.getElementById('backupToWebDAVBtn').addEventListener('click', backupToWebDAV);
+    document.getElementById('restoreFromWebDAVBtn').addEventListener('click', restoreFromWebDAV);
+
+    // 添加加载 WebDAV 配置的函数
+    async function loadWebDAVConfig() {
+      const config = await getWebDAVConfig();
+      if (config) {
+        try {
+          const { url, username, password, filename } = config;
+          document.getElementById('webdavUrl').value = url || '';
+          document.getElementById('webdavUsername').value = username || '';
+          document.getElementById('webdavPassword').value = password || '';
+          document.getElementById('webdavFilename').value = filename || 'nav_backup.json';
+        } catch (error) {
+          console.error('加载 WebDAV 配置失败:', error);
+        }
+      }
+    }
+
+    // 初始化分组列表
+    function initializeCategoriesList() {
+      const config = getBookmarkConfig();
+      const categoriesList = document.querySelector('.categories-list');
+      
+      categoriesList.innerHTML = config.categories.map(category => `
+        <div class="category-item" data-id="${category.id}" draggable="true">
+          <div class="drag-handle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <circle cx="4" cy="4" r="1.5"/>
+              <circle cx="4" cy="8" r="1.5"/>
+              <circle cx="4" cy="12" r="1.5"/>
+              <circle cx="12" cy="4" r="1.5"/>
+              <circle cx="12" cy="8" r="1.5"/>
+              <circle cx="12" cy="12" r="1.5"/>
+            </svg>
+          </div>
+          <span class="category-name">${category.name}</span>
+          <div class="category-actions">
+            <button class="category-action-button edit" onclick="editCategory('${category.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path>
+                <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon>
+              </svg>
+            </button>
+            <button class="category-action-button delete" onclick="deleteCategory('${category.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // 添加拖拽排序功能
+      initializeDragSort(categoriesList);
+    }
+
+    // 修改 initializeDragSort 函数，添加触摸事件支持
+    function initializeDragSort(container) {
+      let draggedItem = null;
+      let touchStartY = 0;
+      let initialY = 0;
+      let items = [];
+      let itemHeight = 0;
+
+      container.querySelectorAll('.category-item').forEach(item => {
+        // PC端拖拽事件
+        item.addEventListener('dragstart', (e) => {
+          draggedItem = item;
+          setTimeout(() => item.classList.add('dragging'), 0);
+        });
+
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+          draggedItem = null;
+          saveNewOrder(container);
+        });
+
+        item.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (!draggedItem) return;
+          handleDragOver(e.clientY, item);
+        });
+
+        // 修改移动端触摸事件
+        item.querySelector('.drag-handle').addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          draggedItem = item;
+          items = Array.from(container.querySelectorAll('.category-item'));
+          itemHeight = draggedItem.offsetHeight;
+          
+          const touch = e.touches[0];
+          touchStartY = touch.clientY;
+          initialY = draggedItem.getBoundingClientRect().top;
+          
+          draggedItem.classList.add('dragging');
+          draggedItem.style.position = 'fixed';
+          draggedItem.style.left = '0';
+          draggedItem.style.right = '0';
+          draggedItem.style.top = `${initialY}px`;
+          draggedItem.style.zIndex = '1000';
+          draggedItem.style.margin = '0 1rem';
+        });
+
+        item.querySelector('.drag-handle').addEventListener('touchmove', (e) => {
+          if (!draggedItem) return;
+          e.preventDefault();
+          
+          const touch = e.touches[0];
+          const currentY = touch.clientY;
+          const yOffset = currentY - touchStartY;
+          
+          // 移动当前项
+          draggedItem.style.top = `${initialY + yOffset}px`;
+          
+          // 计算当前拖动项的中心位置
+          const draggedRect = draggedItem.getBoundingClientRect();
+          const draggedCenter = draggedRect.top + draggedRect.height / 2;
+          
+          // 获取所有其他项的位置信息
+          const itemPositions = items.map((item, index) => ({
+            item,
+            index,
+            rect: item.getBoundingClientRect(),
+            center: item.getBoundingClientRect().top + item.getBoundingClientRect().height / 2
+          }));
+          
+          // 找到最近的目标位置
+          const draggedIndex = items.indexOf(draggedItem);
+          let targetIndex = draggedIndex;
+          
+          itemPositions.forEach(({ item, index, center }) => {
+            if (item === draggedItem) return;
+            
+            if (draggedCenter < center && index < draggedIndex) {
+              targetIndex = Math.min(targetIndex, index);
+            } else if (draggedCenter > center && index > draggedIndex) {
+              targetIndex = Math.max(targetIndex, index);
+            }
+          });
+          
+          // 更新其他项的位置
+          items.forEach((item, index) => {
+            if (item === draggedItem) return;
+            
+            let newPosition = index;
+            if (index >= Math.min(targetIndex, draggedIndex) && 
+                index <= Math.max(targetIndex, draggedIndex)) {
+              if (targetIndex > draggedIndex) {
+                newPosition = index - 1;
+              } else if (targetIndex < draggedIndex) {
+                newPosition = index + 1;
+              }
+            }
+            
+            const translateY = (newPosition - index) * itemHeight;
+            item.style.transform = `translateY(${translateY}px)`;
+            item.style.transition = 'transform 0.2s';
+          });
+          
+          // 更新数组顺序
+          if (targetIndex !== draggedIndex) {
+            items.splice(draggedIndex, 1);
+            items.splice(targetIndex, 0, draggedItem);
+          }
+        });
+
+        item.querySelector('.drag-handle').addEventListener('touchend', (e) => {
+          if (!draggedItem) return;
+          
+          // 重置所有项的样式
+          items.forEach(item => {
+            item.style.transform = '';
+            item.style.transition = '';
+          });
+          
+          draggedItem.style.position = '';
+          draggedItem.style.left = '';
+          draggedItem.style.right = '';
+          draggedItem.style.top = '';
+          draggedItem.style.zIndex = '';
+          draggedItem.style.margin = '';
+          draggedItem.classList.remove('dragging');
+          
+          // 重新排序 DOM
+          items.forEach(item => container.appendChild(item));
+          
+          // 保存新顺序
+          saveNewOrder(container);
+          draggedItem = null;
+        });
+      });
+
+      // 处理拖动排序的通用函数
+      function handleDragOver(clientY, item) {
+        if (!draggedItem) return;
+        
+        const box = item.getBoundingClientRect();
+        const offsetY = clientY - box.top - box.height / 2;
+        
+        if (offsetY < 0 && item.previousElementSibling !== draggedItem) {
+          item.parentNode.insertBefore(draggedItem, item);
+        } else if (offsetY > 0 && item.nextElementSibling !== draggedItem) {
+          item.parentNode.insertBefore(draggedItem, item.nextElementSibling);
+        }
+      }
+
+      // 保存新顺序的通用函数
+      function saveNewOrder(container) {
+        const newOrder = Array.from(container.children).map(item => item.dataset.id);
+        const config = getBookmarkConfig();
+        
+        // 重新排序分组
+        config.categories.sort((a, b) => {
+          return newOrder.indexOf(a.id) - newOrder.indexOf(b.id);
+        });
+        
+        localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+        initializeBookmarks(); // 刷新主界面
+      }
+    }
+
+    // 显示编辑分组弹窗
+    function showEditCategoryModal(categoryId = null) {
+      const modal = document.getElementById('editCategoryModal');
+      const title = document.getElementById('editCategoryTitle');
+      const nameInput = document.getElementById('categoryName');
+      const idInput = document.getElementById('categoryId');
+      
+      if (categoryId) {
+        const config = getBookmarkConfig();
+        const category = config.categories.find(c => c.id === categoryId);
+        if (category) {
+          title.textContent = '编辑分组';
+          nameInput.value = category.name;
+          idInput.value = categoryId;
+        }
+      } else {
+        title.textContent = '添加分组';
+        nameInput.value = '';
+        idInput.value = '';
+      }
+      
+      modal.classList.add('show');
+    }
+
+    // 编辑分组
+    function editCategory(categoryId) {
+      const config = getBookmarkConfig();
+      const category = config.categories.find(c => c.id === categoryId);
+      
+      if (category) {
+        const modal = document.getElementById('editCategoryModal');
+        const title = document.getElementById('editCategoryTitle');
+        const nameInput = document.getElementById('categoryName');
+        const idInput = document.getElementById('categoryId');
+        
+        title.textContent = '编辑分组';
+        nameInput.value = category.name;
+        idInput.value = categoryId;
+        
+        modal.classList.add('show');
+      }
+    }
+
+    // 删除分组
+    function deleteCategory(categoryId) {
+      const config = getBookmarkConfig();
+      const category = config.categories.find(c => c.id === categoryId);
+      
+      if (!category) return;
+      
+      if (category.links.length > 0) {
+        if (!confirm(`确定要删除分组"${category.name}"吗？\n该分组中的所有链接也会被删除。`)) {
+          return;
+        }
+      } else {
+        if (!confirm(`确定要删除分组"${category.name}"吗？`)) {
+          return;
+        }
+      }
+      
+      config.categories = config.categories.filter(c => c.id !== categoryId);
+      localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+      initializeCategoriesList();
+      initializeBookmarks(); // 刷新主界面
+    }
+
+    // 将函数设为全局可访问
+    window.editCategory = editCategory;
+    window.deleteCategory = deleteCategory;
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo"></div>
+      <div class="header-actions">
+        <button class="action-button" id="addCategoryBtn" title="分组管理">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18"></path>
+            <path d="M3 12h18"></path>
+            <path d="M3 18h18"></path>
+            <line x1="12" y1="3" x2="12" y2="21"></line>
+          </svg>
+          <span>分组管理</span>
+        </button>
+        <button class="action-button" id="addBookmarkBtn" title="添加链接">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>添加链接</span>
+        </button>
+        <button class="header-button" id="settingsButton" title="设置">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="search-container">
+        <input type="text" class="search-box" placeholder="输入关键词搜索...">
+        <button class="search-engine">
+          <span id="currentEngineIcon">🌐</span>
+          <span id="currentEngineName"></span>
+        </button>
+        <button class="search-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <div class="engine-dropdown"></div>
+      </div>
+
+      <!-- 添加分组标签导航 -->
+      <div class="tabs-container">
+        <div class="tabs"></div>
+        <select class="mobile-tabs-select" style="display: none;">
+          <!-- 将由 JavaScript 动态填充 -->
+        </select>
+      </div>
+
+      <div class="nav-links-container">
+        <div class="content-wrapper">
+          <!-- 内容区域将由 JavaScript 动态生成 -->
+              </div>
+          </div>
+    </main>
+        </div>
+
+  <!-- 修改添加链接弹窗 -->
+  <div class="modal" id="addLinkModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>添加链接</h3>
+      </div>
+      <div class="form-group">
+        <label>选择分组</label>
+        <select id="bookmarkCategory">
+          <!-- 动态填充分组选项 -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label>名称</label>
+        <input type="text" id="linkName" maxlength="12" placeholder="网站名称">
+      </div>
+      <div class="form-group">
+        <label>链接</label>
+        <input type="url" id="linkUrl" placeholder="http(s)://">
+      </div>
+      <div class="form-group">
+        <label>图标</label>
+        <div class="icon-input-group">
+          <select id="iconType">
+            <option value="emoji">Emoji</option>
+            <option value="url">链接</option>
+          </select>
+          <input type="text" id="linkIcon" placeholder="输入 Emoji 或图片链接">
+        </div>
+        <div class="emoji-picker" id="emojiPicker">
+          <!-- 常用 emoji 列表 -->
+          <div class="emoji-item" data-emoji="🔗">🔗</div>
+          <div class="emoji-item" data-emoji="📝">📝</div>
+          <div class="emoji-item" data-emoji="🌐">🌐</div>
+          <div class="emoji-item" data-emoji="📂">📂</div>
+          <div class="emoji-item" data-emoji="🎮">🎮</div>
+          <div class="emoji-item" data-emoji="🎬">🎬</div>
+          <div class="emoji-item" data-emoji="📺">📺</div>
+          <div class="emoji-item" data-emoji="🎵">🎵</div>
+          <div class="emoji-item" data-emoji="📚">📚</div>
+          <div class="emoji-item" data-emoji="⭐">⭐</div>
+          <div class="emoji-item" data-emoji="🔧">🔧</div>
+          <div class="emoji-item" data-emoji="🍜">🍜</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" id="cancelButton">取消</button>
+        <button class="modal-button save-button" id="saveButton">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="context-menu" id="quickLinkMenu">
+    <div class="menu-item edit">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+      </svg>
+      <span>编辑</span>
+    </div>
+    <div class="menu-item delete">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18"></path>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      </svg>
+      <span>删除</span>
+    </div>
+  </div>
+
+  <!-- 添加文件输入（隐藏） -->
+  <input type="file" id="configFileInput" accept=".json" style="display: none;">
+
+  <!-- 添加设置弹窗 -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>设置</h3>
+      </div>
+      <div class="settings-content">
+        <!-- 在设置弹窗中添加搜索引擎管理部分 -->
+        <div class="settings-section">
+          <h4>搜索引擎管理</h4>
+          <div class="search-engines-list">
+            <!-- 搜索引擎列表将由 JavaScript 动态生成 -->
+          </div>
+          <button class="settings-button add-button" id="addEngineBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>添加搜索引擎</span>
+          </button>
+        </div>
+
+        <div class="settings-section">
+          <h4>数据管理</h4>
+          <div class="settings-buttons">
+            <button class="settings-button" id="exportConfigBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>导出到文件</span>
+            </button>
+            <button class="settings-button" id="importConfigBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span>从文件导入</span>
+            </button>
+            <button class="settings-button danger" id="resetConfigBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v18H3z"/>
+                <path d="M15 9l-6 6M9 9l6 6"/>
+              </svg>
+              <span>重置配置</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <h4>配置文本</h4>
+          <div class="config-text-area">
+            <textarea id="configText" placeholder="在此处粘贴配置文本..."></textarea>
+            <div class="config-text-actions">
+              <button class="text-action-button" id="copyConfigBtn" title="复制配置">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>复制</span>
+              </button>
+              <button class="text-action-button" id="importFromTextBtn" title="从文本导入">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                <span>导入</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 在设置弹窗中添加 WebDAV 配置部分 -->
+        <div class="settings-section">
+          <h4>WebDAV 备份</h4>
+          <div class="form-group">
+            <label>服务器地址（文件夹路径）</label>
+            <input type="url" id="webdavUrl" placeholder="https://dav.example.com/dav/path">
+          </div>
+          <div class="form-group">
+            <label>用户名</label>
+            <input type="text" id="webdavUsername">
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="webdavPassword">
+          </div>
+          <div class="form-group">
+            <label>备份文件名</label>
+            <input type="text" id="webdavFilename" value="nav_backup.json">
+            <div class="form-hint" style="color: #666;">
+              建议保持默认文件名，以免恢复时找不到备份文件
+            </div>
+          </div>
+          <div class="settings-buttons">
+            <button class="settings-button" id="backupToWebDAVBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>备份到 WebDAV</span>
+            </button>
+            <button class="settings-button" id="restoreFromWebDAVBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span>从 WebDAV 恢复</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" id="closeSettingsButton">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加搜索引擎弹窗 -->
+  <div class="modal" id="addEngineModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>添加搜索引擎</h3>
+      </div>
+      <div class="form-group">
+        <label>名称</label>
+        <input type="text" id="engineName" placeholder="例如：Google">
+      </div>
+      <div class="form-group">
+        <label>搜索 URL</label>
+        <input type="text" id="engineUrl" placeholder="例如：https://www.google.com/search?q={q}">
+        <div class="form-hint">使用 {q} 表示搜索关键词的位置</div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" id="cancelEngineButton">取消</button>
+        <button class="modal-button save-button" id="saveEngineButton">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加分组管理弹窗 -->
+  <div class="modal" id="categoryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>分组管理</h3>
+      </div>
+      <div class="categories-section">
+        <div class="categories-list-wrapper">
+          <div class="categories-list">
+            <!-- 分组列表将由 JavaScript 动态生成 -->
+          </div>
+        </div>
+        <button class="settings-button add-button" id="addNewCategoryBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>添加分组</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" id="closeCategoryModal">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加/编辑分组弹窗 -->
+  <div class="modal" id="editCategoryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="editCategoryTitle">添加分组</h3>
+      </div>
+      <div class="form-group">
+        <label>分组名称</label>
+        <input type="text" id="categoryName" placeholder="输入分组名称">
+        <input type="hidden" id="categoryId">
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" id="cancelCategoryButton">取消</button>
+        <button class="modal-button save-button" id="saveCategoryButton">保存</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
