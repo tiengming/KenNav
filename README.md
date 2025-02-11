@@ -27,6 +27,27 @@ GitHubPages：https://akenclub.github.io/KenNav/
 
 - 🎨 简洁现代的界面设计
 
+## 浏览器兼容性
+
+为了获得最佳使用体验，推荐使用以下浏览器：
+
+### 桌面端
+- Google Chrome
+- Microsoft Edge
+- Firefox
+
+### 移动端
+- Chrome for Android/iOS
+- Edge for Android/iOS
+- Safari (iOS)
+
+⚠️ **已知问题**：
+- 在一些轻量级浏览器（如 Via）上可能存在以下限制：
+  - 导出配置时可能无法正常下载文件
+  - 长按导航链接可能无法唤出上下文菜单
+  - 部分功能可能无法正常工作
+
+如遇到上述问题，建议更换为 Chrome、Edge 等主流浏览器使用。
 
 ## 截图
 <details>
@@ -43,6 +64,12 @@ GitHubPages：https://akenclub.github.io/KenNav/
 ![移动端主页截图](assets/img_index_mobile.png)
 
 </details>
+
+## 本地开发
+
+1. 克隆仓库后直接在浏览器中打开 index.html 即可
+2. 修改代码后刷新页面即可看到效果
+3. 建议使用 Live Server 等工具提供实时预览
 
 ## 技术栈与开发心得
 
@@ -65,12 +92,6 @@ Cursor 确实帮我节省了不少时间，特别是在写 CSS 样式和一些�
 最有意思的是，使用 AI 工具改变了我写代码的方式。我发现自己花在思考产品设计和用户体验上的时间变多了，因为实现功能变得更快了。与其说是在编程，不如说更像是在和 AI 一起设计产品。
 
 虽然 AI 工具还不够完美，但确实让编程变得更轻松有趣了。关键是要学会如何更好地使用它，让它成为得力助手而不是完全依赖它。
-
-## 本地开发
-
-1. 克隆仓库后直接在浏览器中打开 index.html 即可
-2. 修改代码后刷新页面即可看到效果
-3. 建议使用 Live Server 等工具提供实时预览
 
 ## 贡献
 
