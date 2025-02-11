@@ -175,7 +175,7 @@
     .button {
       display: inline-flex;
       align-items: center;
-      padding: 1rem 1.5rem;
+      padding: 0.8rem 1.2rem;
       font-size: 1.05rem;
       color: #fff;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -188,11 +188,11 @@
       font-weight: 500;
       width: 100%;
       box-sizing: border-box;
-      justify-content: flex-start;
+      height: auto;
+      min-height: 3rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      height: 3rem;
       max-width: 100%;
       padding-right: 1rem;
       -webkit-touch-callout: none;
@@ -645,8 +645,11 @@
     /* 添加按钮内容容器 */
     .button-content {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;  /* 图标和文字之间的间距 */
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.2rem;
+      width: 100%;
+      overflow: hidden;
     }
 
     .edit-text, .done-text {
@@ -1934,6 +1937,88 @@
         display: none;
       }
     }
+
+    /* 备注文本框样式 */
+    #linkNote {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      resize: none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    #linkNote:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    /* 修改链接项样式以适应备注 */
+    .quick-link {
+      padding: 0.8rem 1rem;
+      height: auto;
+      min-height: 2.8rem;
+    }
+
+    .quick-link-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .quick-link-main {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .quick-link-note {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-left: 2.4rem;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    /* 搜索结果中的备注样式 */
+    .search-result-note {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.2rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 添加按钮内容样式 */
+    .button-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.2rem;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .button-main {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .button-note {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.75);
+      overflow: hidden;
+      width: 100%;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
   </style>
   <script type="module">
     import { 
@@ -2108,9 +2193,10 @@
       const name = document.getElementById('linkName').value.trim();
       const url = document.getElementById('linkUrl').value.trim();
       const icon = document.getElementById('linkIcon').value.trim() || DEFAULT_ICON;
+      const note = document.getElementById('linkNote').value.trim();
       
       if (!name || !url) {
-        alert('请填写完整信息');
+        alert('请填写名称和链接');
         return null;
       }
 
@@ -2119,7 +2205,7 @@
           return null;
       }
 
-      return { name, url, icon };
+      return { name, url, icon, note };
     }
 
     // 重置表单函数
@@ -2127,6 +2213,7 @@
       document.getElementById('linkName').value = '';
       document.getElementById('linkUrl').value = '';
       document.getElementById('linkIcon').value = '';
+      document.getElementById('linkNote').value = '';  // 重置备注输入框
       document.getElementById('iconType').value = 'emoji';
       document.getElementById('emojiPicker').classList.add('show');
     }
@@ -2332,6 +2419,7 @@
       document.getElementById('linkName').value = bookmark.name;
       document.getElementById('linkUrl').value = bookmark.url;
       document.getElementById('linkIcon').value = bookmark.icon;
+      document.getElementById('linkNote').value = bookmark.note || '';
       
       // 显示 emoji 面板
       const iconType = document.getElementById('iconType');
@@ -2491,7 +2579,12 @@
              data-id="${link.id}"
              data-category-id="${category.id}"
              oncontextmenu="showContextMenu(event, this); return false;">
-            ${link.icon} <span>${link.name}</span>
+            <div class="button-content">
+              <div class="button-main">
+                ${link.icon} <span>${link.name}</span>
+              </div>
+              ${link.note ? `<div class="button-note">${link.note}</div>` : ''}
+            </div>
           </a>
         `).join('');
       });
@@ -3327,7 +3420,8 @@
         config.categories.forEach(category => {
           category.links.forEach(link => {
             if (link.name.toLowerCase().includes(query.toLowerCase()) ||
-                link.url.toLowerCase().includes(query.toLowerCase())) {
+                link.url.toLowerCase().includes(query.toLowerCase()) ||
+                (link.note && link.note.toLowerCase().includes(query.toLowerCase()))) {
               results.push({
                 ...link,
                 categoryName: category.name
@@ -3352,6 +3446,7 @@
             <div class="search-result-info">
               <div class="search-result-name">${result.name}</div>
               <div class="search-result-url">${result.url}</div>
+              ${result.note ? `<div class="search-result-note">${result.note}</div>` : ''}
             </div>
             <div class="search-result-category">${result.categoryName}</div>
           </div>
@@ -3532,6 +3627,11 @@
       <div class="form-group">
         <label>链接</label>
         <input type="url" id="linkUrl" placeholder="http(s)://">
+      </div>
+      <div class="form-group">
+        <label>备注（选填）</label>
+        <textarea id="linkNote" placeholder="添加备注信息..." rows="2" maxlength="200"></textarea>
+        <div class="form-hint">最多200字</div>
       </div>
       <div class="form-group">
         <label>图标</label>
