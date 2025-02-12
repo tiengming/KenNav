@@ -837,7 +837,7 @@
 
       .modal-content {
         width: calc(100% - 2rem);
-        max-height: 85vh;
+        max-height: 80vh;
         padding: 1.2rem;
       }
 
@@ -1123,10 +1123,11 @@
       display: none;
     }
 
-    .button-content {
+    .loading-content {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      justify-content: center;
     }
 
     .edit-button .done-content {
@@ -1255,7 +1256,7 @@
     }
 
     /* 设置弹窗样式 */
-    .settings-content {
+    .modal-body {
       padding: 1rem 0;
       flex: 1;
       overflow-y: auto;
@@ -1553,49 +1554,42 @@
     /* 分组列表样式 */
     .categories-list {
       margin-bottom: 1rem;
-      background: rgba(0, 0, 0, 0.02);
+      background: rgba(255, 255, 255, 0.5);
       border-radius: 12px;
       overflow: hidden;
     }
 
     .category-item {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 0.2rem;
-      padding: 0.4rem 0.4rem 0.4rem 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      background: white;
-      transition: background 0.2s;
-    }
-
-    .category-item.dragging {
-      opacity: 0.5;
-      background: #f8fafc;
-    }
-
-    .drag-handle {
-      cursor: grab;
-      color: #94a3b8;
-      padding: 0.2rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: all 0.2s;
+      padding: 0.8rem 1rem;
+      background: white;
+      margin-bottom: 2px;
+      gap: 1rem;
+      user-select: none;
+      transition: background-color 0.2s;
     }
 
-    .drag-handle:hover {
-      color: #64748b;
-      background: rgba(0, 0, 0, 0.05);
+    .category-item:hover {
+      background: #f8f9fa;
     }
 
-    .drag-handle:active {
-      cursor: grabbing;
+    /* 拖拽时的样式 */
+    .category-item.sortable-ghost {
+      opacity: 0.4;
+      background: #f1f5f9;
+      position: relative;
+      z-index: 1;
+      touch-action: none;  /* 防止触摸事件冲突 */
     }
 
-    .category-item:last-child {
-      border-bottom: none;
+    .category-item.sortable-drag {
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      z-index: 2;
+      width: 100% !important;
+      touch-action: none;
     }
 
     .category-name {
@@ -1603,10 +1597,12 @@
       color: #333;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex: 1;
     }
 
     .category-actions {
       display: flex;
+      gap: 0.5rem;
     }
 
     .category-action-button {
@@ -1615,7 +1611,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      color: #666;
+      color: #6366f1;
       transition: all 0.2s;
     }
 
@@ -1624,23 +1620,18 @@
       color: #333;
     }
 
+    .category-action-button.delete {
+      color: #ef4444;
+    }
+
     .category-action-button.delete:hover {
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
     }
 
     .add-category-button {
       width: 100%;
       justify-content: center;
       margin-top: 1rem;
-    }
-
-    /* 修改分组管理弹窗样式 */
-    .modal-content {
-      display: flex;
-      flex-direction: column;
-      max-height: 90vh;
-      height: auto;
     }
 
     /* 分组列表容器样式 */
@@ -1735,18 +1726,33 @@
     }
 
     .drag-handle {
+      cursor: move;
+      cursor: -webkit-grab;
       cursor: grab;
       touch-action: none;
-      -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
       padding: 0.5rem;
+    }
+
+    .drag-handle:active {
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
     }
 
     /* 移动端样式优化 */
     @media (max-width: 480px) {
       .drag-handle {
         padding: 0.8rem 0.4rem; /* 增大触摸区域 */
+      }
+
+      .category-actions {
+        gap: 0.2rem;
+      }
+
+      .engine-actions {
+        gap: 0.2rem;
       }
       
       .category-action-button {
@@ -1994,16 +2000,6 @@
       text-overflow: ellipsis;
     }
 
-    /* 添加按钮内容样式 */
-    .button-content {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.2rem;
-      width: 100%;
-      overflow: hidden;
-    }
-
     .button-main {
       display: flex;
       align-items: center;
@@ -2018,6 +2014,24 @@
       width: 100%;
       text-overflow: ellipsis;
       text-align: left;
+    }
+
+    /* 添加自定义拖放时的样式 */
+    .sortable-fallback {
+      display: none !important;
+    }
+
+    /* 优化移动端拖动体验 */
+    @media (max-width: 768px) {
+      .category-item.sortable-drag {
+        transform: scale(1.02);
+        transition: transform 0.2s !important;
+      }
+
+      .drag-handle {
+        padding: 0.5rem;
+        margin: -0.5rem;  /* 增大可点击区域 */
+      }
     }
   </style>
   <script type="module">
@@ -2273,7 +2287,7 @@
 
       // 关闭设置按钮点击事件
       document.getElementById('closeSettingsButton').addEventListener('click', () => {
-        document.getElementById('settingsModal').classList.remove('show');
+        closeModal(document.getElementById('settingsModal'));
       });
 
       // 添加分组按钮
@@ -2283,7 +2297,7 @@
       });
 
       document.getElementById('closeCategoryModal').addEventListener('click', () => {
-        document.getElementById('categoryModal').classList.remove('show');
+        closeModal(document.getElementById('categoryModal'));
       });
 
       document.getElementById('addNewCategoryBtn').addEventListener('click', () => {
@@ -2305,16 +2319,11 @@
 
       // 取消按钮
       document.getElementById('cancelCategoryButton').addEventListener('click', () => {
-        // 修改这里，从 addCategoryModal 改为 editCategoryModal
-        document.getElementById('editCategoryModal').classList.remove('show');
-        // 清空输入框
-        document.getElementById('categoryName').value = '';
-        document.getElementById('categoryId').value = '';
+        closeModal(document.getElementById('editCategoryModal'));
       });
 
       document.getElementById('cancelButton').addEventListener('click', () => {
-        document.getElementById('addLinkModal').classList.remove('show');
-          resetForm();
+        closeModal(document.getElementById('addLinkModal'));
       });
 
       // 保存按钮
@@ -2344,9 +2353,7 @@
       });
 
       document.getElementById('cancelEngineButton').addEventListener('click', () => {
-        document.getElementById('addEngineModal').classList.remove('show');
-        document.getElementById('engineName').value = '';
-        document.getElementById('engineUrl').value = '';
+        closeModal(document.getElementById('addEngineModal'));
       });
 
       document.getElementById('saveEngineButton').addEventListener('click', addSearchEngine);
@@ -2374,6 +2381,41 @@
       
       // 从文本导入按钮
       document.getElementById('importFromTextBtn').addEventListener('click', importConfigFromText);
+
+      // 添加遮罩层点击事件
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          // 只有当点击的是遮罩层本身时才关闭
+          if (e.target === modal) {
+            closeModal(modal);
+          }
+        });
+      });
+    }
+
+    // 添加关闭弹窗的通用函数
+    function closeModal(modal) {
+      modal.classList.remove('show');
+      
+      // 根据不同的弹窗 ID 执行特定的清理操作
+      switch (modal.id) {
+        case 'addLinkModal':
+          resetForm();
+          break;
+        case 'editCategoryModal':
+          document.getElementById('categoryName').value = '';
+          document.getElementById('categoryId').value = '';
+          break;
+        case 'addEngineModal':
+          document.getElementById('engineName').value = '';
+          document.getElementById('engineUrl').value = '';
+          break;
+        case 'siteSearchModal':
+          document.getElementById('siteSearchInput').value = '';
+          document.getElementById('siteSearchResults').innerHTML = '';
+          break;
+      }
     }
 
     // 保存书签
@@ -2396,6 +2438,7 @@
       localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
       
       // 重新加载页面
+      closeModal(document.getElementById('addLinkModal'));
       location.reload();
     }
 
@@ -2474,6 +2517,7 @@
         resetForm();
 
         // 重新加载页面
+        closeModal(document.getElementById('addLinkModal'));
         location.reload();
       };
     }
@@ -2493,6 +2537,7 @@
       localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
 
       // 重新加载页面
+      closeModal(document.getElementById('addLinkModal'));
       location.reload();
     }
 
@@ -2526,7 +2571,7 @@
       }
       
       localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
-      document.getElementById('editCategoryModal').classList.remove('show');
+      closeModal(document.getElementById('editCategoryModal'));
       initializeCategoriesList();
       initializeBookmarks(); // 刷新主界面
     }
@@ -2670,13 +2715,13 @@
           </div>
           <div class="engine-actions">
             <button class="engine-action-button edit" title="编辑">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
             </button>
             <button class="engine-action-button delete" title="删除">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 6h18"></path>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
                 <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -2726,10 +2771,10 @@
       engines.push({ id, name, url });
       localStorage.setItem('searchEngines', JSON.stringify(engines));
       
-      document.getElementById('addEngineModal').classList.remove('show');
+      closeModal(document.getElementById('addEngineModal'));
       initSearchEnginesList();
       initEngineDropdown();
-      exportConfigToText(); // 更新配置文本
+      exportConfigToText();
     }
 
     // 修改编辑搜索引擎函数
@@ -2779,7 +2824,7 @@
         // 如果编辑的是当前选中的搜索引擎，更新显示
         const currentEngine = getStoredSearchEngine();
         if (id === currentEngine) {
-          updateEngineIcon();
+          updateCurrentEngine();
         }
       };
     }
@@ -2837,13 +2882,13 @@
         // 保存原始内容
         button.dataset.originalHtml = button.innerHTML;
         button.innerHTML = `
-          <div class="button-content">
+          <div class="loading-content">
             <div class="loading-dots">
               <span></span>
               <span></span>
               <span></span>
             </div>
-            <span>处理中...</span>
+            <span>处理中</span>
           </div>
         `;
       } else {
@@ -3115,23 +3160,24 @@
       }
     }
 
+    // 添加全局变量存储 Sortable 实例
+    let categoriesSortable = null;
+
     // 初始化分组列表
     function initializeCategoriesList() {
       const config = getBookmarkConfig();
       const categoriesList = document.querySelector('.categories-list');
       
       categoriesList.innerHTML = config.categories.map(category => `
-        <div class="category-item" data-id="${category.id}" draggable="true">
-          <div class="drag-handle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <circle cx="4" cy="4" r="1.5"/>
-              <circle cx="4" cy="8" r="1.5"/>
-              <circle cx="4" cy="12" r="1.5"/>
-              <circle cx="12" cy="4" r="1.5"/>
-              <circle cx="12" cy="8" r="1.5"/>
-              <circle cx="12" cy="12" r="1.5"/>
-            </svg>
-          </div>
+        <div class="category-item" data-id="${category.id}">
+          <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="4" cy="4" r="1.5"/>
+            <circle cx="4" cy="8" r="1.5"/>
+            <circle cx="4" cy="12" r="1.5"/>
+            <circle cx="12" cy="4" r="1.5"/>
+            <circle cx="12" cy="8" r="1.5"/>
+            <circle cx="12" cy="12" r="1.5"/>
+          </svg>
           <span class="category-name">${category.name}</span>
           <div class="category-actions">
             <button class="category-action-button edit" onclick="editCategory('${category.id}')">
@@ -3150,173 +3196,37 @@
         </div>
       `).join('');
 
-      // 添加拖拽排序功能
-      initializeDragSort(categoriesList);
-    }
+      // 如果已存在 Sortable 实例，先销毁
+      if (categoriesSortable) {
+        categoriesSortable.destroy();
+      }
 
-    // 修改 initializeDragSort 函数，添加触摸事件支持
-    function initializeDragSort(container) {
-      let draggedItem = null;
-      let touchStartY = 0;
-      let initialY = 0;
-      let items = [];
-      let itemHeight = 0;
-
-      container.querySelectorAll('.category-item').forEach(item => {
-        // PC端拖拽事件
-        item.addEventListener('dragstart', (e) => {
-          draggedItem = item;
-          setTimeout(() => item.classList.add('dragging'), 0);
-        });
-
-        item.addEventListener('dragend', () => {
-          item.classList.remove('dragging');
-          draggedItem = null;
-          saveNewOrder(container);
-        });
-
-        item.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          if (!draggedItem) return;
-          handleDragOver(e.clientY, item);
-        });
-
-        // 修改移动端触摸事件
-        item.querySelector('.drag-handle').addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          draggedItem = item;
-          items = Array.from(container.querySelectorAll('.category-item'));
-          itemHeight = draggedItem.offsetHeight;
-          
-          const touch = e.touches[0];
-          touchStartY = touch.clientY;
-          initialY = draggedItem.getBoundingClientRect().top;
-          
-          draggedItem.classList.add('dragging');
-          draggedItem.style.position = 'fixed';
-          draggedItem.style.left = '0';
-          draggedItem.style.right = '0';
-          draggedItem.style.top = `${initialY}px`;
-          draggedItem.style.zIndex = '1000';
-          draggedItem.style.margin = '0 1rem';
-        });
-
-        item.querySelector('.drag-handle').addEventListener('touchmove', (e) => {
-          if (!draggedItem) return;
-          e.preventDefault();
-          
-          const touch = e.touches[0];
-          const currentY = touch.clientY;
-          const yOffset = currentY - touchStartY;
-          
-          // 移动当前项
-          draggedItem.style.top = `${initialY + yOffset}px`;
-          
-          // 计算当前拖动项的中心位置
-          const draggedRect = draggedItem.getBoundingClientRect();
-          const draggedCenter = draggedRect.top + draggedRect.height / 2;
-          
-          // 获取所有其他项的位置信息
-          const itemPositions = items.map((item, index) => ({
-            item,
-            index,
-            rect: item.getBoundingClientRect(),
-            center: item.getBoundingClientRect().top + item.getBoundingClientRect().height / 2
-          }));
-          
-          // 找到最近的目标位置
-          const draggedIndex = items.indexOf(draggedItem);
-          let targetIndex = draggedIndex;
-          
-          itemPositions.forEach(({ item, index, center }) => {
-            if (item === draggedItem) return;
-            
-            if (draggedCenter < center && index < draggedIndex) {
-              targetIndex = Math.min(targetIndex, index);
-            } else if (draggedCenter > center && index > draggedIndex) {
-              targetIndex = Math.max(targetIndex, index);
-            }
+      // 初始化 Sortable
+      categoriesSortable = new Sortable(categoriesList, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        forceFallback: true,
+        fallbackClass: 'sortable-fallback',
+        touchStartThreshold: 5,
+        disabled: false,
+        preventOnFilter: true,
+        supportPointer: true,
+        delayOnTouchOnly: true,
+        delay: 50,
+        onEnd: function(evt) {
+          const config = getBookmarkConfig();
+          const categories = Array.from(categoriesList.children).map(item => {
+            const id = item.dataset.id;
+            return config.categories.find(c => c.id === id);
           });
           
-          // 更新其他项的位置
-          items.forEach((item, index) => {
-            if (item === draggedItem) return;
-            
-            let newPosition = index;
-            if (index >= Math.min(targetIndex, draggedIndex) && 
-                index <= Math.max(targetIndex, draggedIndex)) {
-              if (targetIndex > draggedIndex) {
-                newPosition = index - 1;
-              } else if (targetIndex < draggedIndex) {
-                newPosition = index + 1;
-              }
-            }
-            
-            const translateY = (newPosition - index) * itemHeight;
-            item.style.transform = `translateY(${translateY}px)`;
-            item.style.transition = 'transform 0.2s';
-          });
-          
-          // 更新数组顺序
-          if (targetIndex !== draggedIndex) {
-            items.splice(draggedIndex, 1);
-            items.splice(targetIndex, 0, draggedItem);
-          }
-        });
-
-        item.querySelector('.drag-handle').addEventListener('touchend', (e) => {
-          if (!draggedItem) return;
-          
-          // 重置所有项的样式
-          items.forEach(item => {
-            item.style.transform = '';
-            item.style.transition = '';
-          });
-          
-          draggedItem.style.position = '';
-          draggedItem.style.left = '';
-          draggedItem.style.right = '';
-          draggedItem.style.top = '';
-          draggedItem.style.zIndex = '';
-          draggedItem.style.margin = '';
-          draggedItem.classList.remove('dragging');
-          
-          // 重新排序 DOM
-          items.forEach(item => container.appendChild(item));
-          
-          // 保存新顺序
-          saveNewOrder(container);
-          draggedItem = null;
-        });
-      });
-
-      // 处理拖动排序的通用函数
-      function handleDragOver(clientY, item) {
-        if (!draggedItem) return;
-        
-        const box = item.getBoundingClientRect();
-        const offsetY = clientY - box.top - box.height / 2;
-        
-        if (offsetY < 0 && item.previousElementSibling !== draggedItem) {
-          item.parentNode.insertBefore(draggedItem, item);
-        } else if (offsetY > 0 && item.nextElementSibling !== draggedItem) {
-          item.parentNode.insertBefore(draggedItem, item.nextElementSibling);
+          config.categories = categories;
+          localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
+          initializeBookmarks(); // 刷新主界面
         }
-      }
-
-      // 保存新顺序的通用函数
-      function saveNewOrder(container) {
-        const newOrder = Array.from(container.children).map(item => item.dataset.id);
-        const config = getBookmarkConfig();
-        
-        // 重新排序分组
-        config.categories.sort((a, b) => {
-          return newOrder.indexOf(a.id) - newOrder.indexOf(b.id);
-        });
-        
-        localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
-        initializeBookmarks(); // 刷新主界面
-      }
+      });
     }
 
     // 显示编辑分组弹窗
@@ -3536,6 +3446,7 @@
       });
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 
 <body>
@@ -3614,48 +3525,50 @@
       <div class="modal-header">
         <h3>添加链接</h3>
       </div>
-      <div class="form-group">
-        <label>选择分组</label>
-        <select id="bookmarkCategory">
-          <!-- 动态填充分组选项 -->
-        </select>
-      </div>
-      <div class="form-group">
-        <label>名称</label>
-        <input type="text" id="linkName" maxlength="12" placeholder="网站名称">
-      </div>
-      <div class="form-group">
-        <label>链接</label>
-        <input type="url" id="linkUrl" placeholder="http(s)://">
-      </div>
-      <div class="form-group">
-        <label>备注（选填）</label>
-        <textarea id="linkNote" placeholder="添加备注信息..." rows="2" maxlength="200"></textarea>
-        <div class="form-hint">最多200字</div>
-      </div>
-      <div class="form-group">
-        <label>图标</label>
-        <div class="icon-input-group">
-          <select id="iconType">
-            <option value="emoji">Emoji</option>
-            <option value="url">链接</option>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>选择分组</label>
+          <select id="bookmarkCategory">
+            <!-- 动态填充分组选项 -->
           </select>
-          <input type="text" id="linkIcon" placeholder="输入 Emoji 或图片链接">
         </div>
-        <div class="emoji-picker" id="emojiPicker">
-          <!-- 常用 emoji 列表 -->
-          <div class="emoji-item" data-emoji="🔗">🔗</div>
-          <div class="emoji-item" data-emoji="📝">📝</div>
-          <div class="emoji-item" data-emoji="🌐">🌐</div>
-          <div class="emoji-item" data-emoji="📂">📂</div>
-          <div class="emoji-item" data-emoji="🎮">🎮</div>
-          <div class="emoji-item" data-emoji="🎬">🎬</div>
-          <div class="emoji-item" data-emoji="📺">📺</div>
-          <div class="emoji-item" data-emoji="🎵">🎵</div>
-          <div class="emoji-item" data-emoji="📚">📚</div>
-          <div class="emoji-item" data-emoji="⭐">⭐</div>
-          <div class="emoji-item" data-emoji="🔧">🔧</div>
-          <div class="emoji-item" data-emoji="🍜">🍜</div>
+        <div class="form-group">
+          <label>名称</label>
+          <input type="text" id="linkName" maxlength="12" placeholder="网站名称">
+        </div>
+        <div class="form-group">
+          <label>链接</label>
+          <input type="url" id="linkUrl" placeholder="http(s)://">
+        </div>
+        <div class="form-group">
+          <label>备注（选填）</label>
+          <textarea id="linkNote" placeholder="添加备注信息..." rows="2" maxlength="200"></textarea>
+          <div class="form-hint">最多200字</div>
+        </div>
+        <div class="form-group">
+          <label>图标</label>
+          <div class="icon-input-group">
+            <select id="iconType">
+              <option value="emoji">Emoji</option>
+              <option value="url">链接</option>
+            </select>
+            <input type="text" id="linkIcon" placeholder="输入 Emoji 或图片链接">
+          </div>
+          <div class="emoji-picker" id="emojiPicker">
+            <!-- 常用 emoji 列表 -->
+            <div class="emoji-item" data-emoji="🔗">🔗</div>
+            <div class="emoji-item" data-emoji="📝">📝</div>
+            <div class="emoji-item" data-emoji="🌐">🌐</div>
+            <div class="emoji-item" data-emoji="📂">📂</div>
+            <div class="emoji-item" data-emoji="🎮">🎮</div>
+            <div class="emoji-item" data-emoji="🎬">🎬</div>
+            <div class="emoji-item" data-emoji="📺">📺</div>
+            <div class="emoji-item" data-emoji="🎵">🎵</div>
+            <div class="emoji-item" data-emoji="📚">📚</div>
+            <div class="emoji-item" data-emoji="⭐">⭐</div>
+            <div class="emoji-item" data-emoji="🔧">🔧</div>
+            <div class="emoji-item" data-emoji="🍜">🍜</div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -3692,7 +3605,7 @@
       <div class="modal-header">
         <h3>设置</h3>
       </div>
-      <div class="settings-content">
+      <div class="modal-body">
         <!-- 在设置弹窗中添加搜索引擎管理部分 -->
         <div class="settings-section">
           <h4>搜索引擎管理</h4>
@@ -3835,7 +3748,7 @@
       <div class="modal-header">
         <h3>分组管理</h3>
       </div>
-      <div class="categories-section">
+      <div class="modal-body categories-section">
         <div class="categories-list-wrapper">
           <div class="categories-list">
             <!-- 分组列表将由 JavaScript 动态生成 -->
