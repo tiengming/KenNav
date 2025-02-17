@@ -4,7 +4,7 @@
 
 主地址：https://nav.86440883.xyz/
 
-备用地址：https://nav.hiken.me
+~~备用地址（将于 2025-10-09 停止服务，请尽快迁移到主地址）：https://nav.hiken.me~~
 
 GitHubPages：https://akenclub.github.io/KenNav/
 
