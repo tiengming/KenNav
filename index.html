@@ -346,10 +346,6 @@
         margin-top: 1rem;
         padding-top: 0;
       }
-
-      .button {
-        height: 2.7rem;
-      }
       
       .button-grid {
         gap: 0.6rem;
@@ -719,10 +715,16 @@
       font-size: 1.2rem;
     }
 
-    .quick-link-icon img {
+    img.quick-link-icon {
       width: 20px;
       height: 20px;
       object-fit: contain;
+    }
+
+    .quick-link-icon:not(img) {
+      font-size: 1.2rem;
+      line-height: 1;
+      margin-left: 0;
     }
 
     .quick-link-name {
@@ -2003,7 +2005,6 @@
     .button-main {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
       width: 100%;
     }
 
@@ -2208,6 +2209,7 @@
       const url = document.getElementById('linkUrl').value.trim();
       const icon = document.getElementById('linkIcon').value.trim() || DEFAULT_ICON;
       const note = document.getElementById('linkNote').value.trim();
+      const iconType = document.getElementById('iconType').value;
       
       if (!name || !url) {
         alert('请填写名称和链接');
@@ -2217,6 +2219,11 @@
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         alert('请输入有效的URL地址');
           return null;
+      }
+
+      if (iconType === 'url' && !isValidUrl(icon)) {
+        alert('请输入有效的图标URL地址');
+        return null;
       }
 
       return { name, url, icon, note };
@@ -2467,15 +2474,20 @@
       // 显示 emoji 面板
       const iconType = document.getElementById('iconType');
       const emojiPicker = document.getElementById('emojiPicker');
-      iconType.value = 'emoji';
-      emojiPicker.classList.add('show');
+      if (isValidUrl(bookmark.icon)) {
+        iconType.value = 'url';
+      } else {
+        iconType.value = 'emoji';
+        emojiPicker.classList.add('show');
+      }
       
       // 显示弹窗
       document.getElementById('addLinkModal').classList.add('show');
 
       // 修改保存按钮行为
       const saveButton = document.getElementById('saveButton');
-      const originalClick = saveButton.onclick;
+      saveButton.removeEventListener('click', saveBookmark);
+
       saveButton.onclick = () => {
         const formData = validateForm();
         if (!formData) return;
@@ -2507,7 +2519,7 @@
         localStorage.setItem(STORAGE_KEYS.BOOKMARK_CONFIG, JSON.stringify(config));
 
         // 恢复原始点击事件
-        saveButton.onclick = originalClick;
+        saveButton.addEventListener('click', saveBookmark);
 
         // 恢复弹窗标题
         document.querySelector('#addLinkModal .modal-header h3').textContent = '添加链接';
@@ -2626,7 +2638,11 @@
              oncontextmenu="showContextMenu(event, this); return false;">
             <div class="button-content">
               <div class="button-main">
-                ${link.icon} <span>${link.name}</span>
+                ${isValidUrl(link.icon) 
+                  ? `<img src="${link.icon}" alt="" class="quick-link-icon">` 
+                  : `<span class="quick-link-icon">${link.icon}</span>`
+                } 
+                <span>${link.name}</span>
               </div>
               ${link.note ? `<div class="button-note">${link.note}</div>` : ''}
             </div>
@@ -3445,6 +3461,15 @@
         }
       });
     }
+
+    // 添加 URL 验证函数
+    function isValidUrl(str) {
+      try {
+        return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('data:image/');
+      } catch (e) {
+        return false;
+      }
+    }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
@@ -3534,7 +3559,7 @@
         </div>
         <div class="form-group">
           <label>名称</label>
-          <input type="text" id="linkName" maxlength="12" placeholder="网站名称">
+          <input type="text" id="linkName" placeholder="网站名称">
         </div>
         <div class="form-group">
           <label>链接</label>
@@ -3542,8 +3567,7 @@
         </div>
         <div class="form-group">
           <label>备注（选填）</label>
-          <textarea id="linkNote" placeholder="添加备注信息..." rows="2" maxlength="200"></textarea>
-          <div class="form-hint">最多200字</div>
+          <textarea id="linkNote" placeholder="添加备注信息..." rows="2"></textarea>
         </div>
         <div class="form-group">
           <label>图标</label>
