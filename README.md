@@ -82,6 +82,15 @@ GitHubPages：https://akenclub.github.io/KenNav/
 2. 修改代码后刷新页面即可看到效果
 3. 建议使用 Live Server 等工具提供实时预览
 
+## 常见问题
+1. 坚果云 WebDAV 备份失败？
+    - 见 https://github.com/AkenClub/KenNav/issues/4
+2. WebDAV 能用哪些网盘？
+   - 目前仅在 AlistDAV 测试通过，如果其他网盘 WebDAV 支持跨域，可以尝试使用。
+3. AlistDAV 能备份，但是恢复时候报错，提示“恢复失败：获取备份文件失败”，控制台输出 GET ... 403 (Forbidden)？
+   - 在 AlistDAV 设置 - 存储 - 选择你使用的存储 - WebDAV 策略 选择 “本地代理” - 保存，然后重试恢复操作。
+   - 如果你想保留当前的存储使用 “302 重定向”，那请复制配置到新建一个存储里，然后配置新存储为“本地代理”，使用新建的存储进行备份恢复。
+
 ## 技术栈
 
 ### 技术选择
