@@ -3368,7 +3368,12 @@
 
         searchResults.innerHTML = results.map((result, index) => `
           <div class="search-result-item" data-url="${result.url}" data-index="${index}">
-            <div class="search-result-icon">${result.icon}</div>
+            <div class="search-result-icon">
+            ${isValidUrl(result.icon) 
+              ? `<img src="${result.icon}" alt="" class="quick-link-icon">` 
+              : `<span class="quick-link-icon">${result.icon}</span>`
+            }
+            </div>
             <div class="search-result-info">
               <div class="search-result-name">${result.name}</div>
               <div class="search-result-url">${result.url}</div>
