@@ -1,22 +1,37 @@
 const bookmarkConfig = {
   categories: [
     {
+      id: 'buxiantang',
+      name: '卜仙堂',
+      links: [
+        { id: 'buxiantang_1', url: "https://buxiantang.top/", name: "玄门答疑", icon: "💡" },
+        { id: 'buxiantang_2', url: "https://blog.buxiantang.top/", name: "卜仙堂", icon: "🔔" },
+        { id: 'buxiantang_3', url: "https://anal.buxiantang.top/about", name: "经典解读", icon: "✨" },
+        { id: 'buxiantang_4', url: "https://buxiantang.top/about", name: "关于我", icon: "🪧" },
+        { id: 'buxiantang_5', url: "https://liuyao.buxiantang.top/", name: "六爻盘", icon: "🧮" },
+        { id: 'buxiantang_6', url: "https://liguide.buxiantang.top/", name: "开悟指南", icon: "📒" },
+      ]
+    },
+    {
       id: 'quick',
       name: '快速访问',
       links: [
-        { id: 'quick_1', url: "https://linux.do", name: "LinuxDo", icon: "🐧" },
+        { id: 'quick_1', url: "https://www.bing.com/translator?mkt=zh-CN", name: "bing翻译", icon: "🐧" },
         { id: 'quick_2', url: "https://www.github.com", name: "GitHub", icon: "📦" },
-        { id: 'quick_3', url: "https://mail.qq.com", name: "QQ 邮箱", icon: "📧" },
+        { id: 'quick_3', url: "https://www.msn.cn/zh-cn/weather/maps", name: "MSN 天气", icon: "☀️" },
+        { id: 'quick_4', url: "https://dash.cloudflare.com/", name: "Cloudflare", icon: "⚖️" },
+        { id: 'quick_5', url: "https://pick.buxiantang.top/", name: "图床", icon: "🧩" },
       ]
     },
     {
       id: 'forum',
-      name: '论坛',
+      name: '论坛博客',
       links: [
         { id: 'forum_1', url: "https://www.v2ex.com", name: "V2EX", icon: "💬" },
-        { id: 'forum_2', url: "https://www.ruanyifeng.com/blog/", name: "阮一峰", icon: "💬" },
-        { id: 'forum_3', url: "https://hellogithub.com/", name: "HelloGitHub", icon: "💬" },
-        { id: 'forum_4', url: "https://learnku.com/", name: "LearnKu", icon: "💬" },
+        { id: 'forum_2', url: "https://code.buxiantang.top/", name: "Code", icon: "📰" },
+        { id: 'forum_3', url: "https://www.ruanyifeng.com/blog/", name: "阮一峰", icon: "💬" },
+        { id: 'forum_4', url: "https://hellogithub.com/", name: "HelloGitHub", icon: "💬" },
+        { id: 'forum_5', url: "https://learnku.com/", name: "LearnKu", icon: "💬" },
       ]
     },
     {
@@ -24,9 +39,12 @@ const bookmarkConfig = {
       name: '工具',
       links: [
         { id: 'tools_1', url: "https://translate.google.com", name: "Google 翻译", icon: "🌐" },
-        { id: 'tools_2', url: "https://22.do/zh", name: "22.do 一次性邮箱", icon: "📧" },
-        { id: 'tools_3', url: "https://pmail.plus/zh/#!", name: "pmail.plus 一次性邮箱", icon: "📧" },
+        { id: 'tools_2', url: "https://email.dgdyhh.top/", name: "一次性邮箱", icon: "📮" },
+        { id: 'tools_3', url: "https://stock.hostmonit.com/CloudFlareYes", name: "IP 优选", icon: "📡" },
         { id: 'tools_4', url: "https://ping.pe/", name: "IP 查询", icon: "🌐" },
+        { id: 'tools_5', url: "https://zhongguose.com/#zizi", name: "传统色", icon: "🎨" },
+        { id: 'tools_6', url: "https://markdown.buxiantang.top/", name: "MD 写作", icon: "✒️" },
+        { id: 'tools_7', url: "https://dizhi.buxiantang.top/", name: "地址生成器", icon: "✈️" },
       ]
     },
     {
@@ -36,7 +54,20 @@ const bookmarkConfig = {
         { id: 'entertainment_1', url: "https://www.youtube.com", name: "YouTube", icon: "📺" },
         { id: 'entertainment_2', url: "https://www.netflix.com", name: "Netflix", icon: "🎬" },
         { id: 'entertainment_3', url: "https://www.bilibili.com", name: "Bilibili", icon: "📺" },
-        { id: 'entertainment_4', url: "https://movie.douban.com/", name: "豆瓣电影", icon: "🎬" },
+        { id: 'entertainment_4', url: "https://v.qq.com/", name: "腾讯视频", icon: "🎬" },
+        { id: 'entertainment_5', url: "https://tv.dgdyhh.top", name: "全网影视", icon: "🎞️" },
+      ]
+    },
+    {
+      id: 'ainav',
+      name: 'AI导航',
+      links: [
+        { id: 'ainav_1', url: "https://chatgpt.com/", name: "Chatgpt", icon: "💡" },
+        { id: 'ainav_2', url: "https://claude.ai/", name: "Claude", icon: "🔔" },
+        { id: 'ainav_3', url: "https://chat.deepseek.com/", name: "DeepSeek", icon: "✨" },
+        { id: 'ainav_4', url: "https://copilot.microsoft.com/", name: "Copilot", icon: "🔮" },
+        { id: 'ainav_5', url: "https://prompt.buxiantang.top/", name: "Prompt", icon: "⚙️" },
+        { id: 'ainav_6', url: "https://chat.buxiantang.top/", name: "chat web", icon: "🪐" },
       ]
     }
   ]
