@@ -2,10 +2,6 @@
 
 ## 在线地址
 
-主地址：https://nav.86440883.xyz/
-
-~~备用地址（将于 2025-10-09 停止服务，请尽快迁移到主地址）：https://nav.hiken.me~~
-
 GitHubPages：https://akenclub.github.io/KenNav/
 
 
@@ -123,5 +119,6 @@ Cursor 确实帮我节省了不少时间，特别是在写 CSS 样式和一些�
 欢迎提交 Issue 和 Pull Request。
 
 ## 许可证
+
 
 本项目采用 [MIT 许可证](LICENSE)。
